@@ -1,69 +1,131 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import Navbar from "@/components/Navbar";
+import Hero from "@/components/Hero";
+import PlatformMarquee from "@/components/PlatformMarquee";
+import ROICalculator from "@/components/ROICalculator";
+import TalentRoster from "@/components/TalentRoster";
+import CampaignShowcase from "@/components/CampaignShowcase";
+import ServicesGrid from "@/components/ServicesGrid";
+import BrandIntakeModal from "@/components/BrandIntakeModal";
+import CreatorApplicationModal from "@/components/CreatorApplicationModal";
+import SmoothScroll from "@/components/SmoothScroll";
+import CustomCursor from "@/components/CustomCursor";
 
 export default function Home() {
+  const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
+  const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
+
+  const openBrandModalWithContext = () => {
+    setIsBrandModalOpen(true);
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen bg-background relative selection:bg-primary-500 selection:text-white">
+      <SmoothScroll />
+      <CustomCursor />
+
+      <Navbar
+        onOpenBrandModal={() => setIsBrandModalOpen(true)}
+        onOpenCreatorModal={() => setIsCreatorModalOpen(true)}
+      />
+
+      <Hero
+        onOpenBrandModal={() => setIsBrandModalOpen(true)}
+        onOpenCreatorModal={() => setIsCreatorModalOpen(true)}
+      />
+
+      <PlatformMarquee />
+
+      <ServicesGrid />
+
+      <ROICalculator
+        onOpenBrandModal={openBrandModalWithContext}
+      />
+
+      <TalentRoster
+        onOpenBrandModal={openBrandModalWithContext}
+      />
+
+      <CampaignShowcase />
+
+      {/* Footer */}
+      <footer className="border-t border-white/[0.06] py-16 bg-background relative z-10" id="about">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid gap-12 md:grid-cols-4">
+            <div className="md:col-span-2 space-y-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xl font-extrabold text-white tracking-tight">DAN SERVICES</span>
+                <span className="w-2 h-2 rounded-full bg-primary-400 animate-pulse" />
+              </div>
+              <p className="text-sm text-gray-400 leading-relaxed max-w-sm">
+                Engineering viral cultural moments & high-ROI creator campaigns across YouTube, Instagram, X (Twitter), LinkedIn, and TikTok.
+              </p>
+              <div className="flex items-center gap-3 pt-2 text-xs font-mono text-gray-500">
+                <span>NEW YORK</span>
+                <span>•</span>
+                <span>LOS ANGELES</span>
+                <span>•</span>
+                <span>LONDON</span>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="text-sm font-semibold text-gray-200 mb-3 tracking-wide">Agency Navigation</h4>
+              <div className="space-y-2.5">
+                {[
+                  { name: "Services & Capabilities", href: "#services" },
+                  { name: "Curated Talent Fleet", href: "#talent-roster" },
+                  { name: "Verified Case Studies", href: "#case-studies" },
+                  { name: "ROI Forecasting Engine", href: "#roi-calculator" },
+                  { name: "About DAN Services", href: "/about" },
+                ].map((item) => (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    className="block text-sm text-gray-400 hover:text-white transition-colors"
+                  >
+                    {item.name}
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h4 className="text-sm font-semibold text-gray-200 mb-3 tracking-wide">Client & Creator Action</h4>
+              <div className="space-y-3">
+                <button
+                  type="button"
+                  onClick={() => setIsBrandModalOpen(true)}
+                  className="w-full text-left px-3.5 py-2.5 rounded-xl bg-primary-500/10 border border-primary-500/30 text-xs font-semibold text-primary-300 hover:bg-primary-500 hover:text-white transition-all shadow-[0_0_15px_rgba(0,188,212,0.15)]"
+                >
+                  Hire Creators & Launch Campaign →
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsCreatorModalOpen(true)}
+                  className="w-full text-left px-3.5 py-2.5 rounded-xl bg-secondary-500/10 border border-secondary-500/30 text-xs font-semibold text-secondary-300 hover:bg-secondary-500 hover:text-white transition-all shadow-[0_0_15px_rgba(156,39,176,0.15)]"
+                >
+                  Join Creator Fleet Application →
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-14 pt-8 border-t border-white/[0.04] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+            <p>© 2026 DAN SERVICES LLC. All rights reserved. FTC Compliant & Certified Partner.</p>
+            <div className="flex items-center gap-6">
+              <span className="hover:text-gray-400 cursor-pointer">Privacy Policy</span>
+              <span className="hover:text-gray-400 cursor-pointer">Terms of Agency Engagement</span>
+              <span className="hover:text-gray-400 cursor-pointer">FTC Compliance Disclosure</span>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </footer>
+
+      <BrandIntakeModal isOpen={isBrandModalOpen} onClose={() => setIsBrandModalOpen(false)} />
+      <CreatorApplicationModal isOpen={isCreatorModalOpen} onClose={() => setIsCreatorModalOpen(false)} />
+    </main>
   );
 }
