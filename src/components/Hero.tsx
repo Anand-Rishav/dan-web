@@ -1,12 +1,29 @@
 "use client";
 
 import dynamic from 'next/dynamic';
+import { useSyncExternalStore } from 'react';
 import { useLeadModals } from '@/components/LeadModalProvider';
 
 const ClientHero = dynamic(() => import('@/components/ClientHero'), { ssr: false });
 
+// The 3D hero pulls a ~240KB three.js bundle. Phones and low-core devices
+// never show it anyway, so gate it here — the chunk isn't even requested
+// unless the device is a capable desktop (>=4 cores, viewport >= md).
+const SMALL_SCREEN = '(max-width: 767px)';
+
+function subscribeToScreen(cb: () => void) {
+  const mq = window.matchMedia(SMALL_SCREEN);
+  mq.addEventListener('change', cb);
+  return () => mq.removeEventListener('change', cb);
+}
+
+function getCapableOf3D() {
+  return navigator.hardwareConcurrency >= 4 && !window.matchMedia(SMALL_SCREEN).matches;
+}
+
 export default function Hero() {
   const { openBrandModal, openCreatorModal } = useLeadModals();
+  const capableOf3D = useSyncExternalStore(subscribeToScreen, getCapableOf3D, () => false);
   const platformBadges = [
     { platform: "YouTube", stat: "500M+ Views", icon: "▶", color: "hover:border-red-500/40" },
     { platform: "TikTok", stat: "820M+ Views", icon: "♪", color: "hover:border-cyan-500/40" },
@@ -17,8 +34,8 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen w-full overflow-hidden flex flex-col justify-between" id="hero">
-      {/* 3D Canvas Background */}
-      <ClientHero />
+      {/* 3D Canvas Background — desktop-class devices only (see gate above) */}
+      {capableOf3D && <ClientHero />}
 
       {/* Atmospheric gradient overlay */}
       <div className="absolute inset-0 z-[1] bg-gradient-to-b from-background/40 via-background/20 to-background pointer-events-none" />
@@ -71,7 +88,7 @@ export default function Hero() {
             <button
               type="button"
               onClick={() => openBrandModal()}
-              className="inline-flex h-13 items-center justify-center px-8 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 text-white font-semibold rounded-xl transition-all duration-300 shadow-[0_0_30px_rgba(0,188,212,0.35)] hover:shadow-[0_0_45px_rgba(0,188,212,0.5)] hover:-translate-y-0.5 text-sm md:text-base"
+              className="inline-flex h-13 items-center justify-center px-8 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 text-gray-950 font-semibold rounded-xl transition-all duration-300 shadow-[0_0_30px_rgba(0,188,212,0.35)] hover:shadow-[0_0_45px_rgba(0,188,212,0.5)] hover:-translate-y-0.5 text-sm md:text-base"
             >
               Launch Campaign →
             </button>

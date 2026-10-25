@@ -26,9 +26,6 @@ export const metadata: Metadata = {
     siteName: "DAN SERVICES",
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "DAN SERVICES Logo" }],
   },
-  icons: {
-    icon: "/favicon.ico",
-  },
 };
 
 // Strips DOM attributes injected by browser extensions (Bitwarden's

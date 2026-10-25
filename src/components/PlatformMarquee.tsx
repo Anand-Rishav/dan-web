@@ -23,7 +23,7 @@ export default function PlatformMarquee() {
               </span>
               <div>
                 <span className="text-sm font-medium text-white">{platform.name}</span>
-                <span className="block text-xs text-gray-500">{platform.sub}</span>
+                <span className="block text-xs text-gray-400">{platform.sub}</span>
               </div>
             </div>
           ))}
@@ -32,14 +32,14 @@ export default function PlatformMarquee() {
 
       {/* Client proof banner */}
       <div className="mt-16 max-w-5xl mx-auto px-6">
-        <p className="text-center text-xs uppercase tracking-widest text-gray-600 mb-8">
+        <p className="text-center text-xs uppercase tracking-widest text-gray-400 mb-8">
           Trusted by leading brands
         </p>
         <div className="flex flex-wrap items-center justify-center gap-8">
           {["Stripe", "Notion", "Linear", "Vercel", "Supabase", "Figma", "Arc", "Raycast"].map((name) => (
             <div
               key={name}
-              className="px-5 py-2.5 bg-white/[0.03] border border-white/[0.06] rounded-lg text-sm text-gray-500 font-medium backdrop-blur-sm hover:text-gray-300 hover:border-white/[0.12] transition-all duration-300"
+              className="px-5 py-2.5 bg-white/[0.03] border border-white/[0.06] rounded-lg text-sm text-gray-400 font-medium backdrop-blur-sm hover:text-gray-300 hover:border-white/[0.12] transition-all duration-300"
             >
               {name}
             </div>

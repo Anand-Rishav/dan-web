@@ -127,23 +127,26 @@ export default function ROICalculator({ className = "" }: ROICalculatorProps) {
             {/* Budget Slider */}
             <div>
               <div className="flex justify-between items-baseline mb-3">
-                <label className="text-sm font-semibold text-gray-200">
+                <label htmlFor="roi-budget" className="text-sm font-semibold text-gray-200">
                   Target Campaign Budget
                 </label>
-                <span className="font-mono text-2xl font-bold text-primary-400">
+                <span className="font-mono text-2xl font-bold text-primary-400" aria-live="polite">
                   ${budget.toLocaleString()}
                 </span>
               </div>
               <input
+                id="roi-budget"
                 type="range"
+                name="budget"
                 min="5000"
                 max="500000"
                 step="5000"
                 value={budget}
                 onChange={(e) => setBudget(Number(e.target.value))}
+                aria-valuetext={`$${budget.toLocaleString()}`}
                 className="w-full accent-primary-500"
               />
-              <div className="flex justify-between text-xs text-gray-500 mt-2 font-mono">
+              <div className="flex justify-between text-xs text-gray-400 mt-2 font-mono">
                 <span>$5,000 (Emerging)</span>
                 <span>$100,000 (Growth)</span>
                 <span>$500,000+ (Blitz)</span>
@@ -270,7 +273,7 @@ export default function ROICalculator({ className = "" }: ROICalculatorProps) {
                 <button
                   type="button"
                   onClick={() => openBrandModal({ budget })}
-                  className="w-full h-12 flex items-center justify-center gap-2 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 text-white font-semibold rounded-xl transition-all duration-300 shadow-[0_0_30px_rgba(0,188,212,0.3)] hover:-translate-y-0.5 text-sm"
+                  className="w-full h-12 flex items-center justify-center gap-2 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 text-gray-950 font-semibold rounded-xl transition-all duration-300 shadow-[0_0_30px_rgba(0,188,212,0.3)] hover:-translate-y-0.5 text-sm"
                 >
                   <span>Lock In This Campaign Strategy</span>
                   <span>→</span>

@@ -33,7 +33,7 @@ export default function SiteFooter() {
             <p className="text-sm text-gray-400 leading-relaxed max-w-sm">
               Engineering viral cultural moments & high-ROI creator campaigns across YouTube, Instagram, X (Twitter), LinkedIn, and TikTok.
             </p>
-            <div className="flex items-center gap-3 pt-2 text-xs font-mono text-gray-500">
+            <div className="flex items-center gap-3 pt-2 text-xs font-mono text-gray-400">
               <span>NEW YORK</span>
               <span>•</span>
               <span>LOS ANGELES</span>
@@ -95,11 +95,11 @@ export default function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-14 pt-8 border-t border-white/[0.04] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+        <div className="mt-14 pt-8 border-t border-white/[0.04] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400">
           <p>© 2026 DAN SERVICES LLC. All rights reserved. FTC Compliant & Certified Partner.</p>
           <div className="flex items-center gap-6">
             {legalLinks.map((item) => (
-              <Link key={item.name} href={item.href} className="hover:text-gray-400 transition-colors">
+              <Link key={item.name} href={item.href} className="hover:text-gray-200 transition-colors">
                 {item.name}
               </Link>
             ))}

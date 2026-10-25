@@ -299,6 +299,28 @@ check("T11c mobile modal opens without overflow", mOverflow <= 1, `overflow=${mO
 await shot(mp, "t11c_mobile_modal");
 await mp.keyboard.press("Escape");
 
+// T14 — branded 404 page + icon set
+const notFound = await page.request.get(`${BASE}/this-page-does-not-exist`);
+const nfStatus = notFound.status();
+const nfBody = await notFound.text();
+check(
+  "T14a unknown URL returns 404 status",
+  nfStatus === 404,
+  `status=${nfStatus}`,
+);
+check(
+  "T14b 404 page is branded (nav + copy + CTA)",
+  nfBody.includes("This Campaign Didn&#x27;t Convert") && nfBody.includes("Return to Homepage") && nfBody.includes("Main navigation"),
+  "",
+);
+const iconResp = await page.request.get(`${BASE}/icon`);
+const appleResp = await page.request.get(`${BASE}/apple-icon`);
+check(
+  "T14c generated favicon + apple-touch-icon served",
+  iconResp.status() === 200 && appleResp.status() === 200,
+  `icon=${iconResp.status()} apple-icon=${appleResp.status()}`,
+);
+
 // ---------- Console error audit ----------
 const realErrors = [...consoleErrors, ...pageErrors, ...mobileErrors].filter(
   (t) => !/favicon|net::ERR|Failed to load resource.*(404|500)/i.test(t),

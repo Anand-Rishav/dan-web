@@ -75,7 +75,7 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-3">
           <button
             onClick={() => openBrandModal()}
-            className="h-9 px-5 text-sm font-medium bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-all duration-200 hover:shadow-[0_0_20px_rgba(0,188,212,0.25)]"
+            className="h-9 px-5 text-sm font-medium bg-primary-500 hover:bg-primary-400 text-gray-950 rounded-lg transition-all duration-200 hover:shadow-[0_0_20px_rgba(0,188,212,0.25)]"
           >
             Hire Creators
           </button>
@@ -131,7 +131,7 @@ export default function Navbar() {
           <div className="flex flex-col gap-2 pt-4">
             <button
               onClick={() => { openBrandModal(); setIsMobileMenuOpen(false); }}
-              className="w-full h-10 text-sm font-medium bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors"
+              className="w-full h-10 text-sm font-medium bg-primary-500 hover:bg-primary-400 text-gray-950 rounded-lg transition-colors"
             >
               Hire Creators
             </button>

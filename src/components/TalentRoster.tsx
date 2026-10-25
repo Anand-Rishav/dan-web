@@ -168,7 +168,7 @@ export default function TalentRoster({ className = "" }: TalentRosterProps) {
     <section className={`py-20 relative ${className}`} id="talent-roster">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-12">
-          <p className="text-xs font-semibold tracking-widest uppercase text-secondary-400 mb-3">
+          <p className="text-xs font-semibold tracking-widest uppercase text-secondary-300 mb-3">
             Elite Creator Fleet
           </p>
           <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
@@ -404,7 +404,7 @@ export default function TalentRoster({ className = "" }: TalentRosterProps) {
                           setSelectedCreator(null);
                           bookCreator(creator);
                         }}
-                        className="flex-1 h-11 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all shadow-[0_0_20px_rgba(0,188,212,0.3)]"
+                        className="flex-1 h-11 bg-primary-500 hover:bg-primary-400 text-gray-950 font-semibold rounded-xl transition-all shadow-[0_0_20px_rgba(0,188,212,0.3)]"
                       >
                         Inquire For Campaign →
                       </button>

@@ -305,7 +305,7 @@ export default function CampaignShowcase({ className = "" }: CampaignShowcasePro
                 <Link
                   href="/#roi-calculator"
                   onClick={() => setSelectedCampaign(null)}
-                  className="flex-1 h-11 flex items-center justify-center bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all shadow-[0_0_20px_rgba(0,188,212,0.3)] text-sm"
+                  className="flex-1 h-11 flex items-center justify-center bg-primary-500 hover:bg-primary-400 text-gray-950 font-semibold rounded-xl transition-all shadow-[0_0_20px_rgba(0,188,212,0.3)] text-sm"
                 >
                   Calculate Your Campaign ROI →
                 </Link>

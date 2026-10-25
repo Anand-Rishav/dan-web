@@ -158,7 +158,7 @@ export default function BrandIntakeModal({ isOpen, onClose, prefill }: BrandInta
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="mt-6 px-8 h-11 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl text-sm transition-all shadow-[0_0_20px_rgba(0,188,212,0.3)]"
+                  className="mt-6 px-8 h-11 bg-primary-500 hover:bg-primary-400 text-gray-950 font-semibold rounded-xl text-sm transition-all shadow-[0_0_20px_rgba(0,188,212,0.3)]"
                 >
                   Done & Return to Site
                 </button>
@@ -184,7 +184,7 @@ export default function BrandIntakeModal({ isOpen, onClose, prefill }: BrandInta
                   <button
                     type="button"
                     onClick={() => setIsError(false)}
-                    className="px-8 h-11 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl text-sm transition-all shadow-[0_0_20px_rgba(0,188,212,0.3)]"
+                    className="px-8 h-11 bg-primary-500 hover:bg-primary-400 text-gray-950 font-semibold rounded-xl text-sm transition-all shadow-[0_0_20px_rgba(0,188,212,0.3)]"
                   >
                     Try Again
                   </button>
@@ -294,7 +294,7 @@ export default function BrandIntakeModal({ isOpen, onClose, prefill }: BrandInta
                       <button
                         type="button"
                         onClick={nextStep}
-                        className="w-full h-11 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all duration-200 shadow-[0_0_20px_rgba(0,188,212,0.25)] text-sm mt-2"
+                        className="w-full h-11 bg-primary-500 hover:bg-primary-400 text-gray-950 font-semibold rounded-xl transition-all duration-200 shadow-[0_0_20px_rgba(0,188,212,0.25)] text-sm mt-2"
                       >
                         Continue to Platforms & Budget →
                       </button>
@@ -368,7 +368,7 @@ export default function BrandIntakeModal({ isOpen, onClose, prefill }: BrandInta
                         <button
                           type="button"
                           onClick={nextStep}
-                          className="flex-1 h-11 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all shadow-[0_0_20px_rgba(0,188,212,0.25)] text-sm"
+                          className="flex-1 h-11 bg-primary-500 hover:bg-primary-400 text-gray-950 font-semibold rounded-xl transition-all shadow-[0_0_20px_rgba(0,188,212,0.25)] text-sm"
                         >
                           Next: Goals & Finalize →
                         </button>
@@ -414,7 +414,7 @@ export default function BrandIntakeModal({ isOpen, onClose, prefill }: BrandInta
                         <button
                           type="submit"
                           disabled={isSubmitting}
-                          className="flex-1 h-11 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 text-white font-semibold rounded-xl transition-all shadow-[0_0_25px_rgba(0,188,212,0.3)] text-sm disabled:opacity-50"
+                          className="flex-1 h-11 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 text-gray-950 font-semibold rounded-xl transition-all shadow-[0_0_25px_rgba(0,188,212,0.3)] text-sm disabled:opacity-50"
                         >
                           {isSubmitting ? "Locking In Strategy..." : "Submit Campaign Strategy"}
                         </button>

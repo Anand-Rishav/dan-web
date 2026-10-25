@@ -130,7 +130,7 @@ export default function ServicesGrid({ className = "" }: ServicesGridProps) {
               onClick={() => setActiveTab("services")}
               className={`px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                 activeTab === "services"
-                  ? "bg-primary-500 text-white shadow-[0_0_20px_rgba(0,188,212,0.3)]"
+                  ? "bg-primary-500 text-gray-950 shadow-[0_0_20px_rgba(0,188,212,0.3)]"
                   : "text-gray-400 hover:text-white"
               }`}
             >
@@ -183,7 +183,7 @@ export default function ServicesGrid({ className = "" }: ServicesGridProps) {
                 </p>
 
                 <div className="space-y-2 pt-4 border-t border-white/[0.06]">
-                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Key Deliverables</p>
+                  <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">Key Deliverables</p>
                   {service.deliverables.map((item, idx) => (
                     <div key={idx} className="flex items-center gap-2 text-xs text-gray-300">
                       <span className="text-primary-400">✓</span>
