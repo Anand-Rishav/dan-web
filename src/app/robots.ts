@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/api/"],
     },
-    sitemap: "https://danservices.com/sitemap.xml",
+    sitemap: "https://www.danservices.in/sitemap.xml",
   };
 }

@@ -175,8 +175,8 @@ export default function BrandIntakeModal({ isOpen, onClose, prefill }: BrandInta
                   {errorKind === "rate"
                     ? "You've submitted several requests in a short window. Please wait about 15 minutes and try again, or reach us directly at "
                     : "Something went wrong while sending your campaign strategy. Please try again in a moment, or reach us directly at "}
-                  <a href="mailto:info@danservices.com" className="text-primary-300 hover:text-primary-200 underline">
-                    info@danservices.com
+                  <a href="mailto:info@danservices.in" className="text-primary-300 hover:text-primary-200 underline">
+                    info@danservices.in
                   </a>
                   .
                 </p>

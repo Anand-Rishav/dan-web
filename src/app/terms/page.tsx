@@ -29,7 +29,7 @@ export default function TermsPage() {
             <p>
               DAN SERVICES requires all sponsored content arranged through the agency to carry compliant
               disclosures consistent with applicable FTC endorsement guides. Questions about these terms can be
-              directed to <span className="text-primary-300">info@danservices.com</span>.
+              directed to <span className="text-primary-300">info@danservices.in</span>.
             </p>
           </div>
         </article>

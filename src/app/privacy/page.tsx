@@ -29,7 +29,7 @@ export default function PrivacyPage() {
             </p>
             <p>
               You may request access to, correction of, or deletion of your personal data at any time by emailing
-              <span className="text-primary-300"> info@danservices.com</span>.
+              <span className="text-primary-300"> info@danservices.in</span>.
             </p>
           </div>
         </article>

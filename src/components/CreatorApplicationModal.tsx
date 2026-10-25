@@ -140,8 +140,8 @@ export default function CreatorApplicationModal({ isOpen, onClose }: CreatorAppl
                   {errorKind === "rate"
                     ? "You've submitted several applications in a short window. Please wait about 15 minutes and try again, or reach us directly at "
                     : "Something went wrong while sending your application. Please try again in a moment, or reach us directly at "}
-                  <a href="mailto:info@danservices.com" className="text-secondary-300 hover:text-secondary-200 underline">
-                    info@danservices.com
+                  <a href="mailto:info@danservices.in" className="text-secondary-300 hover:text-secondary-200 underline">
+                    info@danservices.in
                   </a>
                   .
                 </p>

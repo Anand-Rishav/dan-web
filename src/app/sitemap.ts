@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const siteUrl = "https://danservices.com";
+const siteUrl = "https://www.danservices.in";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = ["", "/about", "/services", "/case-studies", "/roi-calculator", "/talent-roster", "/privacy", "/terms", "/ftc-disclosure"];

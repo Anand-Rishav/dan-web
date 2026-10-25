@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://danservices.com"),
+  metadataBase: new URL("https://www.danservices.in"),
   title: {
     template: "%s | DAN SERVICES",
     default: "DAN SERVICES | Engineering Viral Cultural Moments & High-ROI Creator Campaigns",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "DAN SERVICES | Engineering Viral Cultural Moments & High-ROI Creator Campaigns",
     description: "DAN SERVICES is an elite, full-service Influencer Marketing Agency specializing in high-converting campaigns across YouTube, Instagram, X (Twitter), LinkedIn, and TikTok.",
-    url: "https://danservices.com",
+    url: "https://www.danservices.in",
     siteName: "DAN SERVICES",
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "DAN SERVICES Logo" }],
   },
@@ -77,12 +77,12 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "DAN SERVICES",
-  url: "https://danservices.com",
+  url: "https://www.danservices.in",
   description: "DAN SERVICES is an elite, full-service Influencer Marketing Agency specializing in high-converting campaigns across YouTube, Instagram, X (Twitter), LinkedIn, and TikTok.",
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "Customer Service",
-    email: "info@danservices.com",
+    email: "info@danservices.in",
   },
 };
 

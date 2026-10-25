@@ -90,7 +90,7 @@ export async function POST(request: Request) {
     if (resend) {
       try {
         await resend.emails.send({
-          from: 'DAN SERVICES <onboarding@danservices.com>',
+          from: 'DAN SERVICES <onboarding@danservices.in>',
           to: validatedData.email,
           subject: 'Welcome to DAN SERVICES Creator Network Application',
           html: `

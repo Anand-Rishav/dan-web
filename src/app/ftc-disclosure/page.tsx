@@ -29,7 +29,7 @@ export default function FtcDisclosurePage() {
             <p>
               Case studies and performance figures presented on this website reflect specific historical
               campaigns and should not be read as promises of future results. Concerns about any content in our
-              network can be reported to <span className="text-primary-300">info@danservices.com</span>.
+              network can be reported to <span className="text-primary-300">info@danservices.in</span>.
             </p>
           </div>
         </article>
