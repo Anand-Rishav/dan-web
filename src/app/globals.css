@@ -64,9 +64,9 @@
 }
 
 /* ── Base Styles ── */
-html {
-  scroll-behavior: smooth;
-}
+/* Smooth anchor scrolling is handled by Lenis (with CSS fallback via
+   scrollIntoView in lib/scrollControl), so no CSS scroll-behavior here —
+   it conflicts with Lenis's transform-based scrolling. */
 
 body {
   background-color: var(--color-background);

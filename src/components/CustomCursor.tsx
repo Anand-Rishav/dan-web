@@ -1,64 +1,53 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function CustomCursor() {
-  const [position, setPosition] = useState({ x: -100, y: -100 });
-  const [trailingPos, setTrailingPos] = useState({ x: -100, y: -100 });
+  // Visibility on fine-pointer devices is handled purely by CSS
+  // ([@media(pointer:fine)]), so no JS state is needed to enable the cursor.
+  // DOM refs are updated directly in a rAF loop; React state is only used for
+  // the hover state so mousemove never triggers a re-render.
+  const dotRef = useRef<HTMLDivElement>(null);
+  const auraRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Only enable custom cursor for fine pointers (mouse/trackpad, not touch)
     if (typeof window === "undefined" || !window.matchMedia("(pointer: fine)").matches) {
       return;
     }
 
-    setIsVisible(true);
+    const target = { x: -100, y: -100 };
+    const trailing = { x: -100, y: -100 };
 
     const onMouseMove = (e: MouseEvent) => {
-      setPosition({ x: e.clientX, y: e.clientY });
+      target.x = e.clientX;
+      target.y = e.clientY;
+      if (dotRef.current) {
+        dotRef.current.style.transform = `translate3d(${target.x}px, ${target.y}px, 0) translate(-50%, -50%)`;
+      }
     };
 
-    const onMouseEnter = () => setIsVisible(true);
-    const onMouseLeave = () => setIsVisible(false);
-
-    window.addEventListener("mousemove", onMouseMove);
-    document.addEventListener("mouseenter", onMouseEnter);
-    document.addEventListener("mouseleave", onMouseLeave);
-
-    // Track clickable elements
     const handleElementHover = (e: MouseEvent) => {
-      const target = e.target as HTMLElement | null;
-      if (!target) return;
-      const isClickable =
-        target.closest("button") ||
-        target.closest("a") ||
-        target.closest("[role='button']") ||
-        target.closest("input") ||
-        target.closest("select") ||
-        target.tagName === "BUTTON" ||
-        target.tagName === "A";
-
-      setIsHovered(!!isClickable);
+      const el = e.target as HTMLElement | null;
+      if (!el) return;
+      setIsHovered(
+        !!el.closest("button, a, [role='button'], input, select, textarea, label")
+      );
     };
 
-    window.addEventListener("mouseover", handleElementHover);
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+    window.addEventListener("mouseover", handleElementHover, { passive: true });
 
     // Smooth trailing physics loop
-    let currentX = -100;
-    let currentY = -100;
     let rafId: number;
-
     const lerp = (start: number, end: number, factor: number) => start + (end - start) * factor;
 
     const loop = () => {
-      setPosition((pos) => {
-        currentX = lerp(currentX, pos.x, 0.18);
-        currentY = lerp(currentY, pos.y, 0.18);
-        setTrailingPos({ x: currentX, y: currentY });
-        return pos;
-      });
+      trailing.x = lerp(trailing.x, target.x, 0.18);
+      trailing.y = lerp(trailing.y, target.y, 0.18);
+      if (auraRef.current) {
+        auraRef.current.style.transform = `translate3d(${trailing.x}px, ${trailing.y}px, 0) translate(-50%, -50%)`;
+      }
       rafId = requestAnimationFrame(loop);
     };
 
@@ -66,36 +55,28 @@ export default function CustomCursor() {
 
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
-      document.removeEventListener("mouseenter", onMouseEnter);
-      document.removeEventListener("mouseleave", onMouseLeave);
       window.removeEventListener("mouseover", handleElementHover);
       cancelAnimationFrame(rafId);
     };
   }, []);
 
-  if (!isVisible) return null;
-
   return (
     <>
-      {/* Central crisp dot */}
+      {/* Central crisp dot — hidden on touch devices via media query */}
       <div
-        className="pointer-events-none fixed top-0 left-0 z-[9999] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-400 transition-opacity duration-200"
-        style={{
-          transform: `translate3d(${position.x}px, ${position.y}px, 0) translate(-50%, -50%)`,
-          width: isHovered ? "6px" : "4px",
-          height: isHovered ? "6px" : "4px",
-        }}
+        ref={dotRef}
+        className="pointer-events-none fixed top-0 left-0 z-[9999] hidden [@media(pointer:fine)]:block rounded-full bg-primary-400"
+        style={{ width: isHovered ? 6 : 4, height: isHovered ? 6 : 4 }}
       />
       {/* Fluid glowing aura */}
       <div
-        className="pointer-events-none fixed top-0 left-0 z-[9998] -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary-400/40 transition-all duration-300 ease-out"
-        style={{
-          transform: `translate3d(${trailingPos.x}px, ${trailingPos.y}px, 0) translate(-50%, -50%)`,
-          width: isHovered ? "48px" : "28px",
-          height: isHovered ? "48px" : "28px",
-          backgroundColor: isHovered ? "rgba(0, 188, 212, 0.1)" : "transparent",
-          boxShadow: isHovered ? "0 0 25px rgba(0, 188, 212, 0.25)" : "none",
-        }}
+        ref={auraRef}
+        className={`pointer-events-none fixed top-0 left-0 z-[9998] hidden [@media(pointer:fine)]:block rounded-full border transition-all duration-300 ease-out ${
+          isHovered
+            ? "border-primary-400/40 bg-primary-400/10 shadow-[0_0_25px_rgba(0,188,212,0.25)]"
+            : "border-primary-400/40"
+        }`}
+        style={{ width: isHovered ? 48 : 28, height: isHovered ? 48 : 28 }}
       />
     </>
   );

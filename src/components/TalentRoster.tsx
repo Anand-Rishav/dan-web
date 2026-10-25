@@ -1,6 +1,10 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Image from "next/image";
+import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { useLeadModals } from "@/components/LeadModalProvider";
+import { platformValue } from "@/lib/platforms";
 
 interface Creator {
   id: number;
@@ -117,13 +121,20 @@ const creators: Creator[] = [
 
 interface TalentRosterProps {
   className?: string;
-  onOpenBrandModal?: (creatorName?: string) => void;
 }
 
-export default function TalentRoster({ className = "", onOpenBrandModal }: TalentRosterProps) {
+export default function TalentRoster({ className = "" }: TalentRosterProps) {
+  const { openBrandModal } = useLeadModals();
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [nicheFilter, setNicheFilter] = useState<string>("all");
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
+
+  const bookCreator = (creator: Creator) => {
+    openBrandModal({
+      creatorName: creator.name,
+      platforms: creator.platforms.map((p) => platformValue(p.name)),
+    });
+  };
 
   const filteredCreators = useMemo(() => {
     return creators.filter((creator) => {
@@ -225,9 +236,12 @@ export default function TalentRoster({ className = "", onOpenBrandModal }: Talen
               <div>
                 <div className="flex items-center gap-4 mb-4">
                   <div className="relative">
-                    <img
+                    <Image
                       src={creator.avatar}
                       alt={creator.name}
+                      width={112}
+                      height={112}
+                      sizes="56px"
                       className="w-14 h-14 rounded-full border-2 border-white/[0.1] object-cover"
                     />
                     {creator.verified && (
@@ -286,13 +300,7 @@ export default function TalentRoster({ className = "", onOpenBrandModal }: Talen
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    if (onOpenBrandModal) {
-                      onOpenBrandModal(creator.name);
-                    } else {
-                      setSelectedCreator(creator);
-                    }
-                  }}
+                  onClick={() => bookCreator(creator)}
                   className="flex-1 h-9 text-xs font-semibold bg-primary-500/20 border border-primary-500/40 text-primary-300 rounded-xl hover:bg-primary-500 hover:text-white transition-all shadow-[0_0_15px_rgba(0,188,212,0.15)]"
                 >
                   Book Creator
@@ -315,90 +323,98 @@ export default function TalentRoster({ className = "", onOpenBrandModal }: Talen
         )}
 
         {/* Creator Profile Modal */}
-        {selectedCreator && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
-            onClick={() => setSelectedCreator(null)}
-          >
-            <div
-              className="bg-gray-950 rounded-2xl p-6 md:p-8 max-w-lg w-full border border-white/[0.1] relative shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all text-lg"
-                onClick={() => setSelectedCreator(null)}
-                aria-label="Close modal"
-              >
-                ×
-              </button>
-
-              <div className="flex items-center gap-4 mb-6">
-                <img
-                  src={selectedCreator.avatar}
-                  alt={selectedCreator.name}
-                  className="w-16 h-16 rounded-full border-2 border-primary-500/50 object-cover"
-                />
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-xl font-bold text-white">{selectedCreator.name}</h3>
-                    <span className="w-4 h-4 bg-primary-400 rounded-full flex items-center justify-center text-[9px] text-black font-bold">✓</span>
-                  </div>
-                  <p className="text-xs font-mono text-gray-400">{selectedCreator.handle}</p>
-                  <p className="text-xs text-secondary-400 font-semibold mt-1">{selectedCreator.niche}</p>
-                </div>
-              </div>
-
-              <div className="space-y-4 text-xs">
-                <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Audience Demographics:</span>
-                    <span className="text-white font-medium text-right">{selectedCreator.demographics}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Average Performance:</span>
-                    <span className="text-cyan-300 font-mono font-semibold">{selectedCreator.avgViews}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Verified Engagement:</span>
-                    <span className="text-emerald-400 font-mono font-semibold">{selectedCreator.engagementRate}%</span>
-                  </div>
-                </div>
-
-                <div>
-                  <span className="text-gray-400 font-semibold block mb-2">Previous Brand Collaborations</span>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedCreator.recentBrands.map((b) => (
-                      <span key={b} className="px-3 py-1 rounded-lg bg-white/[0.05] border border-white/[0.08] text-white font-medium">
-                        {b}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-8 flex gap-3">
+        <Dialog
+          open={selectedCreator !== null}
+          onClose={() => setSelectedCreator(null)}
+          className="relative z-50"
+        >
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-md" aria-hidden="true" />
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <DialogPanel className="bg-gray-950 rounded-2xl p-6 md:p-8 max-w-lg w-full border border-white/[0.1] relative shadow-2xl">
                 <button
-                  type="button"
+                  className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all text-lg"
                   onClick={() => setSelectedCreator(null)}
-                  className="flex-1 h-11 bg-white/[0.05] text-gray-300 rounded-xl hover:bg-white/[0.1] font-medium transition-all"
+                  aria-label="Close modal"
                 >
-                  Close
+                  ×
                 </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const name = selectedCreator.name;
-                    setSelectedCreator(null);
-                    if (onOpenBrandModal) onOpenBrandModal(name);
-                  }}
-                  className="flex-1 h-11 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all shadow-[0_0_20px_rgba(0,188,212,0.3)]"
-                >
-                  Inquire For Campaign →
-                </button>
-              </div>
+
+                {selectedCreator && (
+                  <>
+                    <div className="flex items-center gap-4 mb-6">
+                      <Image
+                        src={selectedCreator.avatar}
+                        alt={selectedCreator.name}
+                        width={64}
+                        height={64}
+                        sizes="64px"
+                        className="w-16 h-16 rounded-full border-2 border-primary-500/50 object-cover"
+                      />
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <DialogTitle className="text-xl font-bold text-white">{selectedCreator.name}</DialogTitle>
+                          <span className="w-4 h-4 bg-primary-400 rounded-full flex items-center justify-center text-[9px] text-black font-bold">✓</span>
+                        </div>
+                        <p className="text-xs font-mono text-gray-400">{selectedCreator.handle}</p>
+                        <p className="text-xs text-secondary-400 font-semibold mt-1">{selectedCreator.niche}</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 text-xs">
+                      <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Audience Demographics:</span>
+                          <span className="text-white font-medium text-right">{selectedCreator.demographics}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Average Performance:</span>
+                          <span className="text-cyan-300 font-mono font-semibold">{selectedCreator.avgViews}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Verified Engagement:</span>
+                          <span className="text-emerald-400 font-mono font-semibold">{selectedCreator.engagementRate}%</span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <span className="text-gray-400 font-semibold block mb-2">Previous Brand Collaborations</span>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedCreator.recentBrands.map((b) => (
+                            <span key={b} className="px-3 py-1 rounded-lg bg-white/[0.05] border border-white/[0.08] text-white font-medium">
+                              {b}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-8 flex gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCreator(null)}
+                        className="flex-1 h-11 bg-white/[0.05] text-gray-300 rounded-xl hover:bg-white/[0.1] font-medium transition-all"
+                      >
+                        Close
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const creator = selectedCreator;
+                          setSelectedCreator(null);
+                          bookCreator(creator);
+                        }}
+                        className="flex-1 h-11 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all shadow-[0_0_20px_rgba(0,188,212,0.3)]"
+                      >
+                        Inquire For Campaign →
+                      </button>
+                    </div>
+                  </>
+                )}
+              </DialogPanel>
             </div>
           </div>
-        )}
+        </Dialog>
       </div>
     </section>
   );

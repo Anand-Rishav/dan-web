@@ -1,40 +1,43 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useLeadModals } from "@/components/LeadModalProvider";
 
 interface ROICalculatorProps {
   className?: string;
-  onOpenBrandModal?: (budget?: number) => void;
 }
 
-export default function ROICalculator({ className = "", onOpenBrandModal }: ROICalculatorProps) {
+// Static option sets live at module scope so the useMemo below has stable
+// references and does not need them as dependencies.
+const platformOptions = [
+  { label: "YouTube", value: "youtube", icon: "▶" },
+  { label: "TikTok", value: "tiktok", icon: "♪" },
+  { label: "Instagram", value: "instagram", icon: "📷" },
+  { label: "X / Twitter", value: "x", icon: "𝕏" },
+  { label: "LinkedIn", value: "linkedin", icon: "in" },
+];
+
+const nicheOptions = [
+  { label: "SaaS & B2B", value: "saas", roasMultiplier: 1.15 },
+  { label: "E-Commerce & D2C", value: "ecom", roasMultiplier: 1.25 },
+  { label: "Gaming & Apps", value: "gaming", roasMultiplier: 1.1 },
+  { label: "FinTech & Web3", value: "fintech", roasMultiplier: 1.3 },
+  { label: "Health & Fitness", value: "fitness", roasMultiplier: 1.2 },
+];
+
+const goalOptions = [
+  { label: "Direct Sales & Revenue", value: "sales" },
+  { label: "App Installs & Growth", value: "app" },
+  { label: "Brand Awareness Blitz", value: "awareness" },
+  { label: "B2B Pipeline & Leads", value: "b2b" },
+];
+
+export default function ROICalculator({ className = "" }: ROICalculatorProps) {
+  const { openBrandModal } = useLeadModals();
   const [budget, setBudget] = useState(35000);
   const [platforms, setPlatforms] = useState<string[]>(["youtube", "tiktok"]);
   const [niche, setNiche] = useState<string>("saas");
   const [goal, setGoal] = useState<string>("sales");
-
-  const platformOptions = [
-    { label: "YouTube", value: "youtube", icon: "▶" },
-    { label: "TikTok", value: "tiktok", icon: "♪" },
-    { label: "Instagram", value: "instagram", icon: "📷" },
-    { label: "X / Twitter", value: "x", icon: "𝕏" },
-    { label: "LinkedIn", value: "linkedin", icon: "in" },
-  ];
-
-  const nicheOptions = [
-    { label: "SaaS & B2B", value: "saas", roasMultiplier: 1.15 },
-    { label: "E-Commerce & D2C", value: "ecom", roasMultiplier: 1.25 },
-    { label: "Gaming & Apps", value: "gaming", roasMultiplier: 1.1 },
-    { label: "FinTech & Web3", value: "fintech", roasMultiplier: 1.3 },
-    { label: "Health & Fitness", value: "fitness", roasMultiplier: 1.2 },
-  ];
-
-  const goalOptions = [
-    { label: "Direct Sales & Revenue", value: "sales" },
-    { label: "App Installs & Growth", value: "app" },
-    { label: "Brand Awareness Blitz", value: "awareness" },
-    { label: "B2B Pipeline & Leads", value: "b2b" },
-  ];
 
   const calculations = useMemo(() => {
     const selectedNicheObj = nicheOptions.find((n) => n.value === niche) || nicheOptions[0];
@@ -266,13 +269,7 @@ export default function ROICalculator({ className = "", onOpenBrandModal }: ROIC
               <div className="mt-8 pt-6 border-t border-white/[0.06]">
                 <button
                   type="button"
-                  onClick={() => {
-                    if (onOpenBrandModal) {
-                      onOpenBrandModal(budget);
-                    } else {
-                      window.location.hash = "#brand-intake";
-                    }
-                  }}
+                  onClick={() => openBrandModal({ budget })}
                   className="w-full h-12 flex items-center justify-center gap-2 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 text-white font-semibold rounded-xl transition-all duration-300 shadow-[0_0_30px_rgba(0,188,212,0.3)] hover:-translate-y-0.5 text-sm"
                 >
                   <span>Lock In This Campaign Strategy</span>

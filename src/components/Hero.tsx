@@ -1,15 +1,12 @@
 "use client";
 
 import dynamic from 'next/dynamic';
+import { useLeadModals } from '@/components/LeadModalProvider';
 
 const ClientHero = dynamic(() => import('@/components/ClientHero'), { ssr: false });
 
-interface HeroProps {
-  onOpenBrandModal?: () => void;
-  onOpenCreatorModal?: () => void;
-}
-
-export default function Hero({ onOpenBrandModal, onOpenCreatorModal }: HeroProps) {
+export default function Hero() {
+  const { openBrandModal, openCreatorModal } = useLeadModals();
   const platformBadges = [
     { platform: "YouTube", stat: "500M+ Views", icon: "▶", color: "hover:border-red-500/40" },
     { platform: "TikTok", stat: "820M+ Views", icon: "♪", color: "hover:border-cyan-500/40" },
@@ -73,14 +70,14 @@ export default function Hero({ onOpenBrandModal, onOpenCreatorModal }: HeroProps
           <div className="flex flex-wrap justify-center gap-4 pt-4">
             <button
               type="button"
-              onClick={onOpenBrandModal}
+              onClick={() => openBrandModal()}
               className="inline-flex h-13 items-center justify-center px-8 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 text-white font-semibold rounded-xl transition-all duration-300 shadow-[0_0_30px_rgba(0,188,212,0.35)] hover:shadow-[0_0_45px_rgba(0,188,212,0.5)] hover:-translate-y-0.5 text-sm md:text-base"
             >
               Launch Campaign →
             </button>
             <button
               type="button"
-              onClick={onOpenCreatorModal}
+              onClick={openCreatorModal}
               className="inline-flex h-13 items-center justify-center px-8 border border-secondary-500/50 bg-secondary-500/5 text-secondary-300 hover:bg-secondary-500/15 hover:border-secondary-500 font-semibold rounded-xl transition-all duration-300 shadow-[0_0_20px_rgba(156,39,176,0.15)] hover:-translate-y-0.5 text-sm md:text-base"
             >
               Join Creator Network

@@ -2,15 +2,20 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useLeadModals } from "@/components/LeadModalProvider";
+import { scrollToSection } from "@/lib/scrollControl";
 
-interface NavbarProps {
-  onOpenBrandModal: () => void;
-  onOpenCreatorModal: () => void;
-}
+const sectionLinks = [
+  { hash: "#services", label: "Services" },
+  { hash: "#talent-roster", label: "Talent Roster" },
+  { hash: "#case-studies", label: "Case Studies" },
+  { hash: "#roi-calculator", label: "ROI Calculator" },
+];
 
-export default function Navbar({ onOpenBrandModal, onOpenCreatorModal }: NavbarProps) {
+export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { openBrandModal, openCreatorModal } = useLeadModals();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,6 +24,15 @@ export default function Navbar({ onOpenBrandModal, onOpenCreatorModal }: NavbarP
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleSectionClick = (e: React.MouseEvent<HTMLAnchorElement>, hash: string) => {
+    setIsMobileMenuOpen(false);
+    // On the homepage, smooth-scroll; elsewhere, navigate to /#section.
+    if (window.location.pathname === "/") {
+      e.preventDefault();
+      scrollToSection(hash);
+    }
+  };
 
   return (
     <nav
@@ -38,33 +52,35 @@ export default function Navbar({ onOpenBrandModal, onOpenCreatorModal }: NavbarP
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-8">
-          {[
-            { href: "#services", label: "Services" },
-            { href: "#talent-roster", label: "Talent Roster" },
-            { href: "#case-studies", label: "Case Studies" },
-            { href: "#roi-calculator", label: "ROI Calculator" },
-            { href: "#about", label: "About" },
-          ].map((link) => (
+          {sectionLinks.map((link) => (
             <a
-              key={link.href}
-              href={link.href}
+              key={link.hash}
+              href={`/${link.hash}`}
+              onClick={(e) => handleSectionClick(e, link.hash)}
               className="text-sm text-gray-400 hover:text-white transition-colors duration-200"
             >
               {link.label}
             </a>
           ))}
+          <Link
+            href="/about"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="text-sm text-gray-400 hover:text-white transition-colors duration-200"
+          >
+            About
+          </Link>
         </div>
 
         {/* CTA Buttons */}
         <div className="hidden md:flex items-center gap-3">
           <button
-            onClick={onOpenBrandModal}
+            onClick={() => openBrandModal()}
             className="h-9 px-5 text-sm font-medium bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-all duration-200 hover:shadow-[0_0_20px_rgba(0,188,212,0.25)]"
           >
             Hire Creators
           </button>
           <button
-            onClick={onOpenCreatorModal}
+            onClick={openCreatorModal}
             className="h-9 px-5 text-sm font-medium border border-secondary-500/50 text-secondary-300 hover:bg-secondary-500/10 rounded-lg transition-all duration-200"
           >
             Join Roster
@@ -95,31 +111,32 @@ export default function Navbar({ onOpenBrandModal, onOpenCreatorModal }: NavbarP
         }`}
       >
         <div className="px-6 pb-6 pt-2 bg-background/95 backdrop-blur-xl border-t border-white/[0.06] space-y-1">
-          {[
-            { href: "#services", label: "Services" },
-            { href: "#talent-roster", label: "Talent Roster" },
-            { href: "#case-studies", label: "Case Studies" },
-            { href: "#roi-calculator", label: "ROI Calculator" },
-            { href: "#about", label: "About" },
-          ].map((link) => (
+          {sectionLinks.map((link) => (
             <a
-              key={link.href}
-              href={link.href}
+              key={link.hash}
+              href={`/${link.hash}`}
+              onClick={(e) => handleSectionClick(e, link.hash)}
               className="block px-3 py-2.5 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
-              onClick={() => setIsMobileMenuOpen(false)}
             >
               {link.label}
             </a>
           ))}
+          <Link
+            href="/about"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="block px-3 py-2.5 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+          >
+            About
+          </Link>
           <div className="flex flex-col gap-2 pt-4">
             <button
-              onClick={() => { onOpenBrandModal(); setIsMobileMenuOpen(false); }}
+              onClick={() => { openBrandModal(); setIsMobileMenuOpen(false); }}
               className="w-full h-10 text-sm font-medium bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors"
             >
               Hire Creators
             </button>
             <button
-              onClick={() => { onOpenCreatorModal(); setIsMobileMenuOpen(false); }}
+              onClick={() => { openCreatorModal(); setIsMobileMenuOpen(false); }}
               className="w-full h-10 text-sm font-medium border border-secondary-500/50 text-secondary-300 hover:bg-secondary-500/10 rounded-lg transition-colors"
             >
               Join Roster

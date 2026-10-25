@@ -7,16 +7,17 @@ export default function PlatformMarquee() {
     { name: "TikTok", sub: "UGC & Spark Ads", icon: "♪" },
   ];
 
-  // Triple repeat for seamless loop
-  const repeatedPlatforms = [...platforms, ...platforms, ...platforms];
+  // Exactly two copies: the marquee animation translates -50%, so the track
+  // must contain exactly 2x the content for a seamless loop.
+  const marqueeItems = [...platforms, ...platforms];
 
   return (
     <section className="py-12 border-y border-white/[0.04] overflow-hidden" id="platforms">
       {/* Platform marquee */}
       <div className="overflow-hidden">
-        <div className="flex gap-12 animate-marquee">
-          {repeatedPlatforms.map((platform, index) => (
-            <div key={index} className="shrink-0 flex items-center gap-3">
+        <div className="flex w-max gap-12 animate-marquee">
+          {marqueeItems.map((platform, index) => (
+            <div key={`${platform.name}-${index}`} className="shrink-0 flex items-center gap-3" aria-hidden={index >= platforms.length}>
               <span className="w-8 h-8 bg-primary-500/10 border border-primary-500/20 rounded-lg flex items-center justify-center text-primary-400 text-sm font-medium">
                 {platform.icon}
               </span>

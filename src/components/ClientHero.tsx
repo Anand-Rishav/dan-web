@@ -117,15 +117,46 @@ function NetworkSynergyCenterpiece({ mousePosition, isLowEnd }: { mousePosition:
 
 export default function ClientHero() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isLowEnd, setIsLowEnd] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
+  // This component is loaded via next/dynamic with { ssr: false }, so it only
+  // ever renders on the client — isLowEnd can be computed lazily on first render.
+  const [isLowEnd] = useState(() => {
+    if (typeof navigator === "undefined") return false;
     const hardwareConcurrency = navigator.hardwareConcurrency || 8;
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    setIsLowEnd(hardwareConcurrency < 2 && isMobile);
-  }, []);
+    return hardwareConcurrency < 2 && isMobile;
+  });
+  // False until the hero intersects the viewport; the WebGL canvas only
+  // mounts while visible so no GPU work happens offscreen or in hidden tabs.
+  const [isSceneActive, setIsSceneActive] = useState(false);
+  const hostRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isLowEnd) return;
+
+    const host = hostRef.current;
+    if (!host) return;
+
+    const syncFromRect = () => {
+      if (document.hidden) {
+        setIsSceneActive(false);
+        return;
+      }
+      const rect = host.getBoundingClientRect();
+      setIsSceneActive(rect.bottom > 0 && rect.top < window.innerHeight);
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsSceneActive(entry.isIntersecting && !document.hidden),
+      { threshold: 0 }
+    );
+    observer.observe(host);
+    document.addEventListener("visibilitychange", syncFromRect);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", syncFromRect);
+    };
+  }, [isLowEnd]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -138,10 +169,6 @@ export default function ClientHero() {
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
-
-  if (!mounted) {
-    return <div className="absolute inset-0 bg-background" />;
-  }
 
   if (isLowEnd) {
     return (
@@ -162,19 +189,21 @@ export default function ClientHero() {
   }
 
   return (
-    <div className="absolute inset-0 pointer-events-none z-0">
-      <Canvas
-        camera={{ position: [0, 0, 6.2], fov: 48 }}
-        style={{ background: "transparent" }}
-        gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
-        dpr={[1, 1.5]}
-      >
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[4, 6, 6]} intensity={1.2} />
-        <pointLight position={[-5, -5, -2]} color="#9c27b0" intensity={1} />
-        <pointLight position={[5, 5, 2]} color="#00bcd4" intensity={1} />
-        <NetworkSynergyCenterpiece mousePosition={mousePosition} isLowEnd={isLowEnd} />
-      </Canvas>
+    <div ref={hostRef} className="absolute inset-0 pointer-events-none z-0">
+      {isSceneActive && (
+        <Canvas
+          camera={{ position: [0, 0, 6.2], fov: 48 }}
+          style={{ background: "transparent" }}
+          gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
+          dpr={[1, 1.5]}
+        >
+          <ambientLight intensity={0.6} />
+          <directionalLight position={[4, 6, 6]} intensity={1.2} />
+          <pointLight position={[-5, -5, -2]} color="#9c27b0" intensity={1} />
+          <pointLight position={[5, 5, 2]} color="#00bcd4" intensity={1} />
+          <NetworkSynergyCenterpiece mousePosition={mousePosition} isLowEnd={isLowEnd} />
+        </Canvas>
+      )}
     </div>
   );
 }

@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 
 interface Campaign {
   id: number;
@@ -145,10 +148,12 @@ export default function CampaignShowcase({ className = "" }: CampaignShowcasePro
             >
               <div>
                 <div className="relative h-52 w-full overflow-hidden">
-                  <img
+                  <Image
                     src={camp.thumbnail}
                     alt={`${camp.brand} campaign showcase`}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
 
@@ -202,38 +207,40 @@ export default function CampaignShowcase({ className = "" }: CampaignShowcasePro
         </div>
 
         {/* Detailed Modal */}
-        {selectedCampaign && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
-            onClick={() => setSelectedCampaign(null)}
-          >
-            <div
-              className="bg-gray-950 rounded-2xl max-w-2xl w-full border border-white/[0.1] relative shadow-2xl max-h-[90vh] overflow-y-auto p-6 md:p-8"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all text-lg"
-                onClick={() => setSelectedCampaign(null)}
-                aria-label="Close modal"
-              >
-                ×
-              </button>
+        <Dialog
+          open={selectedCampaign !== null}
+          onClose={() => setSelectedCampaign(null)}
+          className="relative z-50"
+        >
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-md" aria-hidden="true" />
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <DialogPanel className="bg-gray-950 rounded-2xl max-w-2xl w-full border border-white/[0.1] relative shadow-2xl p-6 md:p-8">
+                <button
+                  className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all text-lg"
+                  onClick={() => setSelectedCampaign(null)}
+                  aria-label="Close modal"
+                >
+                  ×
+                </button>
 
-              <div className="flex flex-wrap items-center gap-2 mb-2">
-                <span className="text-xs font-mono uppercase px-2.5 py-1 rounded-md bg-primary-500/10 text-primary-300 border border-primary-500/20">
-                  {selectedCampaign.category}
-                </span>
-                <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-md">
-                  {selectedCampaign.results.roas}
-                </span>
-              </div>
+                {selectedCampaign && (
+                  <>
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <span className="text-xs font-mono uppercase px-2.5 py-1 rounded-md bg-primary-500/10 text-primary-300 border border-primary-500/20">
+                        {selectedCampaign.category}
+                      </span>
+                      <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-md">
+                        {selectedCampaign.results.roas}
+                      </span>
+                    </div>
 
-              <h2 className="text-2xl md:text-3xl font-bold text-white mt-2">
-                {selectedCampaign.brand}
-              </h2>
-              <p className="text-sm text-gray-400 font-medium mt-1">
-                {selectedCampaign.headline}
-              </p>
+                    <DialogTitle className="text-2xl md:text-3xl font-bold text-white mt-2">
+                      {selectedCampaign.brand}
+                    </DialogTitle>
+                    <p className="text-sm text-gray-400 font-medium mt-1">
+                      {selectedCampaign.headline}
+                    </p>
 
               {/* Highlight Banner */}
               <div className="mt-5 p-4 rounded-xl bg-gradient-to-r from-primary-500/10 via-secondary-500/10 to-transparent border border-white/[0.08] flex items-center gap-3">
@@ -295,17 +302,20 @@ export default function CampaignShowcase({ className = "" }: CampaignShowcasePro
                 >
                   Close Case Study
                 </button>
-                <a
-                  href="#roi-calculator"
+                <Link
+                  href="/#roi-calculator"
                   onClick={() => setSelectedCampaign(null)}
                   className="flex-1 h-11 flex items-center justify-center bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all shadow-[0_0_20px_rgba(0,188,212,0.3)] text-sm"
                 >
                   Calculate Your Campaign ROI →
-                </a>
+                </Link>
               </div>
+                  </>
+                )}
+              </DialogPanel>
             </div>
           </div>
-        )}
+        </Dialog>
       </div>
     </section>
   );

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 
 interface CreatorApplicationModalProps {
   isOpen: boolean;
@@ -11,6 +12,9 @@ export default function CreatorApplicationModal({ isOpen, onClose }: CreatorAppl
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [errorKind, setErrorKind] = useState<"generic" | "rate">("generic");
+  const honeypotRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -35,17 +39,21 @@ export default function CreatorApplicationModal({ isOpen, onClose }: CreatorAppl
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setIsError(false);
+    setErrorKind("generic");
 
     try {
       const res = await fetch("/api/leads/creator", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          fullName: formData.fullName || "Creative Director",
-          email: formData.email || "creator@network.com",
-          niche: formData.niche || "Tech & AI",
+          fullName: formData.fullName,
+          email: formData.email,
+          location: formData.location || undefined,
+          niche: formData.niche,
           mediaKitUrl: formData.mediaKitUrl || undefined,
           audienceDemographics: formData.audienceDemographics || undefined,
+          personalWebsiteUrl: honeypotRef.current?.value.trim() || undefined,
           socialLinks: {
             youtube: formData.youtube || undefined,
             instagram: formData.instagram || undefined,
@@ -59,10 +67,11 @@ export default function CreatorApplicationModal({ isOpen, onClose }: CreatorAppl
       if (res.ok) {
         setIsSuccess(true);
       } else {
-        setIsSuccess(true);
+        if (res.status === 429) setErrorKind("rate");
+        setIsError(true);
       }
     } catch {
-      setIsSuccess(true);
+      setIsError(true);
     } finally {
       setIsSubmitting(false);
     }
@@ -72,263 +81,322 @@ export default function CreatorApplicationModal({ isOpen, onClose }: CreatorAppl
     onClose();
     setTimeout(() => {
       setIsSuccess(false);
+      setIsError(false);
+      setErrorKind("generic");
       setStep(1);
     }, 300);
   };
-
-  if (!isOpen) return null;
 
   const inputClasses =
     "w-full px-4 py-3 bg-white/[0.03] text-white rounded-xl border border-white/[0.08] focus:border-secondary-500/50 focus:ring-2 focus:ring-secondary-500/10 outline-none transition-all placeholder:text-gray-600 text-sm";
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200"
-      onClick={handleClose}
-    >
-      <div
-        className="bg-gray-950 rounded-2xl p-6 md:p-8 max-w-xl w-full border border-white/[0.1] relative shadow-2xl max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all text-lg"
-          onClick={handleClose}
-          aria-label="Close modal"
-        >
-          ×
-        </button>
-
-        {isSuccess ? (
-          <div className="py-8 text-center space-y-4">
-            <div className="w-16 h-16 rounded-full bg-secondary-500/10 border border-secondary-500/30 text-secondary-400 flex items-center justify-center text-3xl mx-auto shadow-[0_0_30px_rgba(156,39,176,0.25)]">
-              ✨
-            </div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">Creator Application Submitted</h2>
-            <p className="text-sm text-gray-400 max-w-md mx-auto leading-relaxed">
-              Welcome to the DAN SERVICES talent radar. Our creator representation team reviews engagement metrics, brand safety scores, and channel storytelling. If accepted, you will receive brand deals matched to your niche.
-            </p>
-            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] text-left text-xs font-mono space-y-1.5 text-gray-400">
-              <div><strong className="text-white">Applicant:</strong> {formData.fullName || "Creator"}</div>
-              <div><strong className="text-white">Selected Niche:</strong> {formData.niche}</div>
-              <div><strong className="text-white">Review Status:</strong> In Talent Queue (24-48 hrs)</div>
-            </div>
+    <Dialog open={isOpen} onClose={handleClose} className="relative z-50">
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-md" aria-hidden="true" />
+      <div className="fixed inset-0 overflow-y-auto">
+        <div className="flex min-h-full items-center justify-center p-4">
+          <DialogPanel className="bg-gray-950 rounded-2xl p-6 md:p-8 max-w-xl w-full border border-white/[0.1] relative shadow-2xl">
             <button
-              type="button"
+              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all text-lg"
               onClick={handleClose}
-              className="mt-6 px-8 h-11 bg-secondary-500 hover:bg-secondary-600 text-white font-semibold rounded-xl text-sm transition-all shadow-[0_0_20px_rgba(156,39,176,0.3)]"
+              aria-label="Close modal"
             >
-              Done & Return to Site
+              ×
             </button>
-          </div>
-        ) : (
-          <>
-            {/* Header */}
-            <div className="mb-6">
-              <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-secondary-400">
-                Creator Fleet Representation
-              </span>
-              <h2 className="text-2xl font-bold text-white mt-1">Join the DAN SERVICES Creator Network</h2>
-              <p className="text-xs text-gray-400 mt-1">Step {step} of 3</p>
-              <div className="flex gap-1.5 mt-3">
-                {[1, 2, 3].map((s) => (
-                  <div
-                    key={s}
-                    className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-                      s <= step ? "bg-secondary-500 shadow-[0_0_8px_rgba(156,39,176,0.5)]" : "bg-white/[0.06]"
-                    }`}
-                  />
-                ))}
+
+            {isSuccess ? (
+              <div className="py-8 text-center space-y-4">
+                <div className="w-16 h-16 rounded-full bg-secondary-500/10 border border-secondary-500/30 text-secondary-400 flex items-center justify-center text-3xl mx-auto shadow-[0_0_30px_rgba(156,39,176,0.25)]">
+                  ✨
+                </div>
+                <DialogTitle className="text-2xl font-bold text-white tracking-tight">
+                  Creator Application Submitted
+                </DialogTitle>
+                <p className="text-sm text-gray-400 max-w-md mx-auto leading-relaxed">
+                  Welcome to the DAN SERVICES talent radar. Our creator representation team reviews engagement metrics, brand safety scores, and channel storytelling. If accepted, you will receive brand deals matched to your niche.
+                </p>
+                <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] text-left text-xs font-mono space-y-1.5 text-gray-400">
+                  <div><strong className="text-white">Applicant:</strong> {formData.fullName || "Creator"}</div>
+                  <div><strong className="text-white">Selected Niche:</strong> {formData.niche}</div>
+                  <div><strong className="text-white">Review Status:</strong> In Talent Queue (24-48 hrs)</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="mt-6 px-8 h-11 bg-secondary-500 hover:bg-secondary-600 text-white font-semibold rounded-xl text-sm transition-all shadow-[0_0_20px_rgba(156,39,176,0.3)]"
+                >
+                  Done & Return to Site
+                </button>
               </div>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {step === 1 && (
-                <>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div>
-                      <label className="text-xs font-semibold text-gray-300 mb-1.5 block">Full Legal / Creator Name</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="Alex Rivers"
-                        value={formData.fullName}
-                        onChange={(e) => handleChange("fullName", e.target.value)}
-                        className={inputClasses}
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-semibold text-gray-300 mb-1.5 block">Contact Email</label>
-                      <input
-                        type="email"
-                        required
-                        placeholder="alex@creator.com"
-                        value={formData.email}
-                        onChange={(e) => handleChange("email", e.target.value)}
-                        className={inputClasses}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-semibold text-gray-300 mb-1.5 block">Primary Location / Country</label>
-                    <input
-                      type="text"
-                      placeholder="Los Angeles, CA / United States"
-                      value={formData.location}
-                      onChange={(e) => handleChange("location", e.target.value)}
-                      className={inputClasses}
-                    />
-                  </div>
-
+            ) : isError ? (
+              <div className="py-8 text-center space-y-4">
+                <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 flex items-center justify-center text-3xl mx-auto">
+                  !
+                </div>
+                <DialogTitle className="text-2xl font-bold text-white tracking-tight">
+                  {errorKind === "rate" ? "Too Many Attempts" : "Submission Failed"}
+                </DialogTitle>
+                <p className="text-sm text-gray-400 max-w-md mx-auto leading-relaxed">
+                  {errorKind === "rate"
+                    ? "You've submitted several applications in a short window. Please wait about 15 minutes and try again, or reach us directly at "
+                    : "Something went wrong while sending your application. Please try again in a moment, or reach us directly at "}
+                  <a href="mailto:info@danservices.com" className="text-secondary-300 hover:text-secondary-200 underline">
+                    info@danservices.com
+                  </a>
+                  .
+                </p>
+                <div className="flex gap-3 justify-center pt-2">
                   <button
                     type="button"
-                    onClick={nextStep}
-                    className="w-full h-11 bg-secondary-500 hover:bg-secondary-600 text-white font-semibold rounded-xl transition-all duration-200 shadow-[0_0_20px_rgba(156,39,176,0.25)] text-sm mt-2"
+                    onClick={() => setIsError(false)}
+                    className="px-8 h-11 bg-secondary-500 hover:bg-secondary-600 text-white font-semibold rounded-xl text-sm transition-all shadow-[0_0_20px_rgba(156,39,176,0.3)]"
                   >
-                    Continue to Channel Handles →
+                    Try Again
                   </button>
-                </>
-              )}
-
-              {step === 2 && (
-                <>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div>
-                      <label className="text-xs font-semibold text-gray-300 mb-1 block">YouTube Channel URL</label>
-                      <input
-                        type="text"
-                        placeholder="https://youtube.com/@handle"
-                        value={formData.youtube}
-                        onChange={(e) => handleChange("youtube", e.target.value)}
-                        className={inputClasses}
+                  <button
+                    type="button"
+                    onClick={handleClose}
+                    className="px-8 h-11 bg-white/[0.04] border border-white/[0.08] text-gray-300 font-medium rounded-xl hover:bg-white/[0.06] text-sm transition-all"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Header */}
+                <div className="mb-6">
+                  <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-secondary-400">
+                    Creator Fleet Representation
+                  </span>
+                  <DialogTitle className="text-2xl font-bold text-white mt-1">
+                    Join the DAN SERVICES Creator Network
+                  </DialogTitle>
+                  <p className="text-xs text-gray-400 mt-1">Step {step} of 3</p>
+                  <div className="flex gap-1.5 mt-3">
+                    {[1, 2, 3].map((s) => (
+                      <div
+                        key={s}
+                        className={`h-1 flex-1 rounded-full transition-all duration-300 ${
+                          s <= step ? "bg-secondary-500 shadow-[0_0_8px_rgba(156,39,176,0.5)]" : "bg-white/[0.06]"
+                        }`}
                       />
-                    </div>
-                    <div>
-                      <label className="text-xs font-semibold text-gray-300 mb-1 block">TikTok Handle</label>
-                      <input
-                        type="text"
-                        placeholder="@handle"
-                        value={formData.tiktok}
-                        onChange={(e) => handleChange("tiktok", e.target.value)}
-                        className={inputClasses}
-                      />
-                    </div>
+                    ))}
                   </div>
+                </div>
 
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div>
-                      <label className="text-xs font-semibold text-gray-300 mb-1 block">Instagram Profile</label>
-                      <input
-                        type="text"
-                        placeholder="@handle"
-                        value={formData.instagram}
-                        onChange={(e) => handleChange("instagram", e.target.value)}
-                        className={inputClasses}
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-semibold text-gray-300 mb-1 block">X / Twitter Handle</label>
-                      <input
-                        type="text"
-                        placeholder="@handle"
-                        value={formData.x}
-                        onChange={(e) => handleChange("x", e.target.value)}
-                        className={inputClasses}
-                      />
-                    </div>
-                  </div>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Honeypot: parked offscreen so humans never see or tab into
+                      it, but bots that auto-fill every input will. */}
+                  <input
+                    ref={honeypotRef}
+                    type="text"
+                    name="personalWebsiteUrl"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    className="absolute -left-[9999px] top-0 h-0 w-0 opacity-0"
+                  />
+                  {step === 1 && (
+                    <>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div>
+                          <label htmlFor="creator-name" className="text-xs font-semibold text-gray-300 mb-1.5 block">Full Legal / Creator Name</label>
+                          <input
+                            id="creator-name"
+                            type="text"
+                            required
+                            placeholder="Alex Rivers"
+                            value={formData.fullName}
+                            onChange={(e) => handleChange("fullName", e.target.value)}
+                            className={inputClasses}
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="creator-email" className="text-xs font-semibold text-gray-300 mb-1.5 block">Contact Email</label>
+                          <input
+                            id="creator-email"
+                            type="email"
+                            required
+                            placeholder="alex@creator.com"
+                            value={formData.email}
+                            onChange={(e) => handleChange("email", e.target.value)}
+                            className={inputClasses}
+                          />
+                        </div>
+                      </div>
 
-                  <div>
-                    <label className="text-xs font-semibold text-gray-300 mb-1 block">LinkedIn Profile (B2B Creators)</label>
-                    <input
-                      type="text"
-                      placeholder="linkedin.com/in/handle"
-                      value={formData.linkedin}
-                      onChange={(e) => handleChange("linkedin", e.target.value)}
-                      className={inputClasses}
-                    />
-                  </div>
+                      <div>
+                        <label htmlFor="creator-location" className="text-xs font-semibold text-gray-300 mb-1.5 block">Primary Location / Country</label>
+                        <input
+                          id="creator-location"
+                          type="text"
+                          placeholder="Los Angeles, CA / United States"
+                          value={formData.location}
+                          onChange={(e) => handleChange("location", e.target.value)}
+                          className={inputClasses}
+                        />
+                      </div>
 
-                  <div className="flex gap-3 pt-2">
-                    <button
-                      type="button"
-                      onClick={prevStep}
-                      className="flex-1 h-11 bg-white/[0.04] border border-white/[0.08] text-gray-300 font-medium rounded-xl hover:bg-white/[0.06] text-sm"
-                    >
-                      ← Back
-                    </button>
-                    <button
-                      type="button"
-                      onClick={nextStep}
-                      className="flex-1 h-11 bg-secondary-500 hover:bg-secondary-600 text-white font-semibold rounded-xl transition-all shadow-[0_0_20px_rgba(156,39,176,0.25)] text-sm"
-                    >
-                      Next: Audience & Media Kit →
-                    </button>
-                  </div>
-                </>
-              )}
+                      <button
+                        type="button"
+                        onClick={nextStep}
+                        className="w-full h-11 bg-secondary-500 hover:bg-secondary-600 text-white font-semibold rounded-xl transition-all duration-200 shadow-[0_0_20px_rgba(156,39,176,0.25)] text-sm mt-2"
+                      >
+                        Continue to Channel Handles →
+                      </button>
+                    </>
+                  )}
 
-              {step === 3 && (
-                <>
-                  <div>
-                    <label className="text-xs font-semibold text-gray-300 mb-1.5 block">Primary Niche</label>
-                    <select
-                      value={formData.niche}
-                      onChange={(e) => handleChange("niche", e.target.value)}
-                      className={`${inputClasses} bg-gray-900`}
-                    >
-                      <option value="Tech & AI">Tech & Artificial Intelligence</option>
-                      <option value="Gaming & Esports">Gaming & Esports</option>
-                      <option value="D2C & Lifestyle">D2C, Fashion & Lifestyle</option>
-                      <option value="Finance & Web3">Finance, Crypto & Macro</option>
-                      <option value="Fitness & Wellness">Fitness, Biohacking & Wellness</option>
-                    </select>
-                  </div>
+                  {step === 2 && (
+                    <>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div>
+                          <label htmlFor="creator-youtube" className="text-xs font-semibold text-gray-300 mb-1 block">YouTube Channel URL</label>
+                          <input
+                            id="creator-youtube"
+                            type="text"
+                            placeholder="https://youtube.com/@handle"
+                            value={formData.youtube}
+                            onChange={(e) => handleChange("youtube", e.target.value)}
+                            className={inputClasses}
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="creator-tiktok" className="text-xs font-semibold text-gray-300 mb-1 block">TikTok Handle</label>
+                          <input
+                            id="creator-tiktok"
+                            type="text"
+                            placeholder="@handle"
+                            value={formData.tiktok}
+                            onChange={(e) => handleChange("tiktok", e.target.value)}
+                            className={inputClasses}
+                          />
+                        </div>
+                      </div>
 
-                  <div>
-                    <label className="text-xs font-semibold text-gray-300 mb-1.5 block">Audience Demographics & Geo</label>
-                    <textarea
-                      placeholder="e.g. 70% US/EU, 20-35 age bracket, high tech affinity"
-                      value={formData.audienceDemographics}
-                      onChange={(e) => handleChange("audienceDemographics", e.target.value)}
-                      className={`${inputClasses} resize-none`}
-                      rows={2}
-                    />
-                  </div>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div>
+                          <label htmlFor="creator-instagram" className="text-xs font-semibold text-gray-300 mb-1 block">Instagram Profile</label>
+                          <input
+                            id="creator-instagram"
+                            type="text"
+                            placeholder="@handle"
+                            value={formData.instagram}
+                            onChange={(e) => handleChange("instagram", e.target.value)}
+                            className={inputClasses}
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="creator-x" className="text-xs font-semibold text-gray-300 mb-1 block">X / Twitter Handle</label>
+                          <input
+                            id="creator-x"
+                            type="text"
+                            placeholder="@handle"
+                            value={formData.x}
+                            onChange={(e) => handleChange("x", e.target.value)}
+                            className={inputClasses}
+                          />
+                        </div>
+                      </div>
 
-                  <div>
-                    <label className="text-xs font-semibold text-gray-300 mb-1.5 block">Media Kit Link or Portfolio URL</label>
-                    <input
-                      type="url"
-                      placeholder="https://drive.google.com/... or https://notion.site/..."
-                      value={formData.mediaKitUrl}
-                      onChange={(e) => handleChange("mediaKitUrl", e.target.value)}
-                      className={inputClasses}
-                    />
-                  </div>
+                      <div>
+                        <label htmlFor="creator-linkedin" className="text-xs font-semibold text-gray-300 mb-1 block">LinkedIn Profile (B2B Creators)</label>
+                        <input
+                          id="creator-linkedin"
+                          type="text"
+                          placeholder="linkedin.com/in/handle"
+                          value={formData.linkedin}
+                          onChange={(e) => handleChange("linkedin", e.target.value)}
+                          className={inputClasses}
+                        />
+                      </div>
 
-                  <div className="flex gap-3 pt-2">
-                    <button
-                      type="button"
-                      onClick={prevStep}
-                      className="flex-1 h-11 bg-white/[0.04] border border-white/[0.08] text-gray-300 font-medium rounded-xl hover:bg-white/[0.06] text-sm"
-                    >
-                      ← Back
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="flex-1 h-11 bg-gradient-to-r from-secondary-500 to-secondary-600 hover:from-secondary-400 hover:to-secondary-500 text-white font-semibold rounded-xl transition-all shadow-[0_0_25px_rgba(156,39,176,0.35)] text-sm disabled:opacity-50"
-                    >
-                      {isSubmitting ? "Submitting Portfolio..." : "Submit Application"}
-                    </button>
-                  </div>
-                </>
-              )}
-            </form>
-          </>
-        )}
+                      <div className="flex gap-3 pt-2">
+                        <button
+                          type="button"
+                          onClick={prevStep}
+                          className="flex-1 h-11 bg-white/[0.04] border border-white/[0.08] text-gray-300 font-medium rounded-xl hover:bg-white/[0.06] text-sm"
+                        >
+                          ← Back
+                        </button>
+                        <button
+                          type="button"
+                          onClick={nextStep}
+                          className="flex-1 h-11 bg-secondary-500 hover:bg-secondary-600 text-white font-semibold rounded-xl transition-all shadow-[0_0_20px_rgba(156,39,176,0.25)] text-sm"
+                        >
+                          Next: Audience & Media Kit →
+                        </button>
+                      </div>
+                    </>
+                  )}
+
+                  {step === 3 && (
+                    <>
+                      <div>
+                        <label htmlFor="creator-niche" className="text-xs font-semibold text-gray-300 mb-1.5 block">Primary Niche</label>
+                        <select
+                          id="creator-niche"
+                          value={formData.niche}
+                          onChange={(e) => handleChange("niche", e.target.value)}
+                          className={`${inputClasses} bg-gray-900`}
+                        >
+                          <option value="Tech & AI">Tech & Artificial Intelligence</option>
+                          <option value="Gaming & Esports">Gaming & Esports</option>
+                          <option value="D2C & Lifestyle">D2C, Fashion & Lifestyle</option>
+                          <option value="Finance & Web3">Finance, Crypto & Macro</option>
+                          <option value="Fitness & Wellness">Fitness, Biohacking & Wellness</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label htmlFor="creator-demo" className="text-xs font-semibold text-gray-300 mb-1.5 block">Audience Demographics & Geo</label>
+                        <textarea
+                          id="creator-demo"
+                          placeholder="e.g. 70% US/EU, 20-35 age bracket, high tech affinity"
+                          value={formData.audienceDemographics}
+                          onChange={(e) => handleChange("audienceDemographics", e.target.value)}
+                          className={`${inputClasses} resize-none`}
+                          rows={2}
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="creator-mediakit" className="text-xs font-semibold text-gray-300 mb-1.5 block">Media Kit Link or Portfolio URL</label>
+                        <input
+                          id="creator-mediakit"
+                          type="url"
+                          placeholder="https://drive.google.com/... or https://notion.site/..."
+                          value={formData.mediaKitUrl}
+                          onChange={(e) => handleChange("mediaKitUrl", e.target.value)}
+                          className={inputClasses}
+                        />
+                      </div>
+
+                      <div className="flex gap-3 pt-2">
+                        <button
+                          type="button"
+                          onClick={prevStep}
+                          className="flex-1 h-11 bg-white/[0.04] border border-white/[0.08] text-gray-300 font-medium rounded-xl hover:bg-white/[0.06] text-sm"
+                        >
+                          ← Back
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={isSubmitting}
+                          className="flex-1 h-11 bg-gradient-to-r from-secondary-500 to-secondary-600 hover:from-secondary-400 hover:to-secondary-500 text-white font-semibold rounded-xl transition-all shadow-[0_0_25px_rgba(156,39,176,0.35)] text-sm disabled:opacity-50"
+                        >
+                          {isSubmitting ? "Submitting Portfolio..." : "Submit Application"}
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </form>
+              </>
+            )}
+          </DialogPanel>
+        </div>
       </div>
-    </div>
+    </Dialog>
   );
 }

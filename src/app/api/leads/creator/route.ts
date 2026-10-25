@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { supabase } from '@/lib/supabaseClient'
 import { Resend } from 'resend'
 import { WebClient } from '@slack/web-api'
+import { checkLeadRateLimit, getClientIp } from '@/lib/rateLimit'
 
 const resendApiKey = process.env.RESEND_API_KEY
 const resend = resendApiKey ? new Resend(resendApiKey) : null
@@ -15,6 +16,7 @@ const creatorApplicationSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
   email: z.string().email('Invalid email address'),
   phone: z.string().optional(),
+  location: z.string().optional(),
   socialLinks: z.object({
     youtube: z.string().optional(),
     instagram: z.string().optional(),
@@ -29,35 +31,59 @@ const creatorApplicationSchema = z.object({
 
 export async function POST(request: Request) {
   try {
+    // Spam defense 1/2: per-IP rate limit before doing any work.
+    const rl = checkLeadRateLimit(request)
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: 'Too many submissions. Please try again later.' },
+        { status: 429, headers: { 'Retry-After': String(rl.retryAfterSec) } }
+      )
+    }
+
     const body = await request.json()
+
+    // Spam defense 2/2: honeypot. The field is invisible to humans; if a bot
+    // filled it, answer with fake success and store nothing.
+    if (typeof body.personalWebsiteUrl === 'string' && body.personalWebsiteUrl.trim() !== '') {
+      console.warn('Creator application honeypot triggered:', getClientIp(request))
+      return NextResponse.json({
+        success: true,
+        message: 'Application received successfully. Our creator talent team will be in touch.',
+        data: { timestamp: new Date().toISOString() }
+      }, { status: 201 })
+    }
+
     const validatedData = creatorApplicationSchema.parse(body)
 
-    let dbRecord = null
 
-    // Attempt insertion into Supabase if configured
+    // Insert into Supabase when configured. No .select() here on purpose:
+    // RLS is insert-only for anon, and PostgREST refuses to return the
+    // inserted row without SELECT permission. If Supabase is configured
+    // but the insert fails, surface a real error — never fake success.
     if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      try {
-        const { data, error } = await supabase
-          .from('creator_applications')
-          .insert([
-            {
-              full_name: validatedData.fullName,
-              email: validatedData.email,
-              phone: validatedData.phone,
-              social_links: validatedData.socialLinks ?? {},
-              niche: validatedData.niche,
-              media_kit_url: validatedData.mediaKitUrl,
-              audience_demographics: validatedData.audienceDemographics,
-            },
-          ])
-          .select()
+      const { error } = await supabase
+        .from('creator_applications')
+        .insert([
+          {
+            full_name: validatedData.fullName,
+            email: validatedData.email,
+            phone: validatedData.phone,
+            location: validatedData.location || null,
+            social_links: validatedData.socialLinks ?? {},
+            niche: validatedData.niche,
+            media_kit_url: validatedData.mediaKitUrl,
+            audience_demographics: validatedData.audienceDemographics,
+          },
+        ])
 
-        if (!error && data) {
-          dbRecord = data
-        }
-      } catch (err) {
-        console.warn('Supabase creator insert warning:', err)
+      if (error) {
+        console.error('Supabase creator application insert failed:', error)
+        return NextResponse.json(
+          { error: 'Failed to save your application. Please try again in a moment.' },
+          { status: 500 }
+        )
       }
+      console.log('Creator application saved to Supabase:', validatedData.email)
     }
 
     // Send confirmation email via Resend if configured
@@ -74,6 +100,7 @@ export async function POST(request: Request) {
             <ul>
               <li>Full Name: ${validatedData.fullName}</li>
               <li>Email: ${validatedData.email}</li>
+              <li>Location: ${validatedData.location || 'Not provided'}</li>
               <li>Niche: ${validatedData.niche}</li>
               <li>Media Kit: ${validatedData.mediaKitUrl || 'Not provided'}</li>
             </ul>
@@ -93,6 +120,7 @@ export async function POST(request: Request) {
             🌟 *New Creator Network Application*:
             *Full Name*: ${validatedData.fullName}
             *Email*: ${validatedData.email}
+            *Location*: ${validatedData.location || 'Not provided'}
             *Niche*: ${validatedData.niche}
             *Media Kit*: ${validatedData.mediaKitUrl || 'None'}
           `,
@@ -105,7 +133,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       message: 'Application received successfully. Our creator talent team will be in touch.',
-      data: dbRecord || { ...validatedData, timestamp: new Date().toISOString() }
+      data: { ...validatedData, timestamp: new Date().toISOString() }
     }, { status: 201 })
   } catch (error) {
     if (error instanceof z.ZodError) {
