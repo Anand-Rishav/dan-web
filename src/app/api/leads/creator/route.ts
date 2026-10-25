@@ -32,7 +32,7 @@ const creatorApplicationSchema = z.object({
 export async function POST(request: Request) {
   try {
     // Spam defense 1/2: per-IP rate limit before doing any work.
-    const rl = checkLeadRateLimit(request)
+    const rl = checkLeadRateLimit(request, 'creator')
     if (!rl.ok) {
       return NextResponse.json(
         { error: 'Too many submissions. Please try again later.' },

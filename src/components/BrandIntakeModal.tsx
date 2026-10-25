@@ -76,13 +76,20 @@ export default function BrandIntakeModal({ isOpen, onClose, prefill }: BrandInta
     setIsError(false);
     setErrorKind("generic");
 
+    // Accept "acme.com" as well as "https://acme.com" — the field lives on
+    // step 1 but submits from step 3, so browser URL validation never runs.
+    const rawWebsite = formData.website.trim();
+    const website = rawWebsite
+      ? (/^https?:\/\//i.test(rawWebsite) ? rawWebsite : `https://${rawWebsite}`)
+      : "";
+
     try {
       const res = await fetch("/api/leads/brand", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           companyName: formData.companyName,
-          website: formData.website || undefined,
+          website: website || undefined,
           contactName: formData.contactName,
           email: formData.email,
           budget: formData.budget,

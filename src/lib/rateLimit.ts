@@ -1,25 +1,43 @@
 // Spam protection for the public lead endpoints, layer 1: per-IP rate
-// limiting. In-memory fixed-window buckets, shared across both lead routes
-// per IP. NOTE: this state lives in one server process — if the deployment
-// ever runs multiple instances, move the bucket to a shared store (e.g.
-// Upstash Redis) or every instance gets its own allowance.
+// limiting. In-memory fixed-window buckets keyed by IP + form.
+//
+// IMPORTANT (learned in production): on Vercel the forwarded-for header can
+// be absent or uniform across visitors — collapsing everyone into one shared
+// bucket turned the limiter into a self-inflicted site-wide lockout. If no IP
+// header is found we now FAIL OPEN (allow); the honeypot layer still
+// discards bots either way.
+// NOTE: this state lives in one server process — if the deployment ever runs
+// multiple instances, move the bucket to a shared store (e.g. Upstash Redis).
 
 type Bucket = { count: number; resetAt: number };
 
 const buckets = new Map<string, Bucket>();
 const MAX_ENTRIES = 10_000;
 
-const LEAD_LIMIT = 6;
-const LEAD_WINDOW_MS = 15 * 60 * 1000;
+const WINDOW_MS = 15 * 60 * 1000;
+const LIMIT_PER_FORM = 6;
 
-export function getClientIp(request: Request): string {
+export function getClientIp(request: Request): string | null {
   const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  return request.headers.get("x-real-ip") ?? "unknown";
+  if (forwarded) {
+    const first = forwarded.split(",").map((s) => s.trim()).find(Boolean);
+    if (first) return first;
+  }
+  return (
+    request.headers.get("x-vercel-ip") ??
+    request.headers.get("x-real-ip") ??
+    null
+  );
 }
 
-export function checkLeadRateLimit(request: Request): { ok: boolean; retryAfterSec: number } {
-  return rateLimit(`leads:${getClientIp(request)}`, LEAD_LIMIT, LEAD_WINDOW_MS);
+export function checkLeadRateLimit(
+  request: Request,
+  form: "brand" | "creator",
+): { ok: boolean; retryAfterSec: number } {
+  const ip = getClientIp(request);
+  // No usable IP header: allow rather than throttle every visitor as one.
+  if (!ip) return { ok: true, retryAfterSec: 0 };
+  return rateLimit(`leads:${form}:${ip}`, LIMIT_PER_FORM, WINDOW_MS);
 }
 
 export function rateLimit(
@@ -29,7 +47,7 @@ export function rateLimit(
 ): { ok: boolean; retryAfterSec: number } {
   const now = Date.now();
 
-  // Opportunistic sweep so expired IPs don't grow the map without bound.
+  // Opportunistic sweep so expired keys don't grow the map without bound.
   if (buckets.size > MAX_ENTRIES) {
     for (const [k, bucket] of buckets) {
       if (bucket.resetAt <= now) buckets.delete(k);
