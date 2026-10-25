@@ -18,11 +18,22 @@ const WINDOW_MS = 15 * 60 * 1000;
 const LIMIT_PER_FORM = 6;
 
 export function getClientIp(request: Request): string | null {
+  // Vercel's documented end-user IP header comes first; plain
+  // x-forwarded-for can carry a constant proxy hop instead of the client.
+  const vercelForwarded = request.headers.get("x-vercel-forwarded-for");
+  if (vercelForwarded) {
+    const ip = vercelForwarded.split(",").map((s) => s.trim()).find(Boolean);
+    if (ip) return ip;
+  }
+
   const forwarded = request.headers.get("x-forwarded-for");
   if (forwarded) {
-    const first = forwarded.split(",").map((s) => s.trim()).find(Boolean);
-    if (first) return first;
+    // The end user is typically the LAST hop when proxies prepend themselves.
+    const hops = forwarded.split(",").map((s) => s.trim()).filter(Boolean);
+    const last = hops[hops.length - 1];
+    if (last) return last;
   }
+
   return (
     request.headers.get("x-vercel-ip") ??
     request.headers.get("x-real-ip") ??

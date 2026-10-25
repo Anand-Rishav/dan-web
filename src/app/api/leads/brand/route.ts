@@ -26,6 +26,22 @@ const brandLeadSchema = z.object({
   calendlyUrl: z.string().url('Invalid Calendly URL').optional(),
 })
 
+// Temporary diagnostic: reports (masked) which IP headers reach the function
+// on this host, so the rate limiter's IP detection can be verified in
+// production without exposing visitor addresses.
+export async function GET(request: Request) {
+  const ip = getClientIp(request)
+  return NextResponse.json({
+    detectedIpLastSegment: ip ? ip.split(/[.:]/).slice(-1)[0] : null,
+    headers: {
+      'x-vercel-forwarded-for': !!request.headers.get('x-vercel-forwarded-for'),
+      'x-forwarded-for': !!request.headers.get('x-forwarded-for'),
+      'x-vercel-ip': !!request.headers.get('x-vercel-ip'),
+      'x-real-ip': !!request.headers.get('x-real-ip'),
+    },
+  })
+}
+
 export async function POST(request: Request) {
   try {
     // Spam defense 1/2: per-IP rate limit before doing any work.
