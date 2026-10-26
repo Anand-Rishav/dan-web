@@ -1,16 +1,31 @@
 "use client";
 
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useRef, useState, useEffect } from "react";
 import * as THREE from "three";
 
-function NetworkSynergyCenterpiece({ mousePosition, isLowEnd }: { mousePosition: { x: number; y: number }; isLowEnd: boolean }) {
+// Mobile quality mode: coarser geometry, lower pixel ratio, no antialias,
+// and a 30fps render cap (below). Same scene, cheaper to draw.
+function NetworkSynergyCenterpiece({
+  mousePosition,
+  isLowEnd,
+  isMobile,
+}: {
+  mousePosition: { x: number; y: number };
+  isLowEnd: boolean;
+  isMobile: boolean;
+}) {
   const groupRef = useRef<THREE.Group>(null);
   const ring1Ref = useRef<THREE.Mesh>(null);
   const ring2Ref = useRef<THREE.Mesh>(null);
   const ring3Ref = useRef<THREE.Mesh>(null);
 
   const radius = 2.6;
+  // detail: high (desktop) / medium (phone) / low (weak device)
+  const dMain = isLowEnd ? 2 : isMobile ? 2 : 3;
+  const dInner = isLowEnd ? 1 : isMobile ? 1 : 2;
+  const dSwarm = isLowEnd ? 2 : isMobile ? 2 : 4;
+  const dViolet = isMobile ? 1 : 2;
 
   useFrame((_state, delta) => {
     if (groupRef.current) {
@@ -39,7 +54,7 @@ function NetworkSynergyCenterpiece({ mousePosition, isLowEnd }: { mousePosition:
     <group ref={groupRef}>
       {/* Primary Cybernetic Sphere */}
       <mesh>
-        <icosahedronGeometry args={[radius, isLowEnd ? 2 : 3]} />
+        <icosahedronGeometry args={[radius, dMain]} />
         <meshBasicMaterial
           wireframe
           color="#00bcd4"
@@ -50,7 +65,7 @@ function NetworkSynergyCenterpiece({ mousePosition, isLowEnd }: { mousePosition:
 
       {/* Inner Radiant Core Sphere */}
       <mesh>
-        <icosahedronGeometry args={[radius * 0.92, isLowEnd ? 1 : 2]} />
+        <icosahedronGeometry args={[radius * 0.92, dInner]} />
         <meshBasicMaterial
           wireframe
           color="#ab47bc"
@@ -90,7 +105,7 @@ function NetworkSynergyCenterpiece({ mousePosition, isLowEnd }: { mousePosition:
 
       {/* Swarm Points representing creator nodes */}
       <points>
-        <icosahedronGeometry args={[radius * 1.15, isLowEnd ? 2 : 4]} />
+        <icosahedronGeometry args={[radius * 1.15, dSwarm]} />
         <pointsMaterial
           color="#00bcd4"
           size={0.04}
@@ -102,7 +117,7 @@ function NetworkSynergyCenterpiece({ mousePosition, isLowEnd }: { mousePosition:
 
       {/* Violet Nodes */}
       <points>
-        <icosahedronGeometry args={[radius * 1.4, 2]} />
+        <icosahedronGeometry args={[radius * 1.4, dViolet]} />
         <pointsMaterial
           color="#ce93d8"
           size={0.05}
@@ -115,16 +130,33 @@ function NetworkSynergyCenterpiece({ mousePosition, isLowEnd }: { mousePosition:
   );
 }
 
+// With frameloop="demand" the canvas only renders when invalidated; pacing
+// invalidations at ~30fps halves the per-second GPU/CPU cost on phones.
+function RenderPacer({ intervalMs }: { intervalMs: number }) {
+  const invalidate = useThree((state) => state.invalidate);
+  useEffect(() => {
+    const id = setInterval(() => invalidate(), intervalMs);
+    return () => clearInterval(id);
+  }, [invalidate, intervalMs]);
+  return null;
+}
+
 export default function ClientHero() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   // This component is loaded via next/dynamic with { ssr: false }, so it only
-  // ever renders on the client — isLowEnd can be computed lazily on first render.
+  // ever renders on the client — device flags can be computed lazily on
+  // first render.
   const [isLowEnd] = useState(() => {
     if (typeof navigator === "undefined") return false;
     const hardwareConcurrency = navigator.hardwareConcurrency || 8;
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     return hardwareConcurrency < 2 && isMobile;
   });
+  // Phone viewport → cheaper quality mode (Hero defers the bundle fetch
+  // until the page is idle on phones; desktop behavior is unchanged).
+  const [isMobileViewport] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches
+  );
   // False until the hero intersects the viewport; the WebGL canvas only
   // mounts while visible so no GPU work happens offscreen or in hidden tabs.
   const [isSceneActive, setIsSceneActive] = useState(false);
@@ -194,14 +226,16 @@ export default function ClientHero() {
         <Canvas
           camera={{ position: [0, 0, 6.2], fov: 48 }}
           style={{ background: "transparent" }}
-          gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
-          dpr={[1, 1.5]}
+          gl={{ alpha: true, antialias: !isMobileViewport, powerPreference: "high-performance" }}
+          dpr={isMobileViewport ? [1, 1.25] : [1, 1.5]}
+          frameloop={isMobileViewport ? "demand" : "always"}
         >
+          {isMobileViewport && <RenderPacer intervalMs={33} />}
           <ambientLight intensity={0.6} />
           <directionalLight position={[4, 6, 6]} intensity={1.2} />
           <pointLight position={[-5, -5, -2]} color="#9c27b0" intensity={1} />
           <pointLight position={[5, 5, 2]} color="#00bcd4" intensity={1} />
-          <NetworkSynergyCenterpiece mousePosition={mousePosition} isLowEnd={isLowEnd} />
+          <NetworkSynergyCenterpiece mousePosition={mousePosition} isLowEnd={isLowEnd} isMobile={isMobileViewport} />
         </Canvas>
       )}
     </div>

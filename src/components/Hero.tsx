@@ -1,14 +1,15 @@
 "use client";
 
 import dynamic from 'next/dynamic';
-import { useSyncExternalStore } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import { useLeadModals } from '@/components/LeadModalProvider';
 
 const ClientHero = dynamic(() => import('@/components/ClientHero'), { ssr: false });
 
-// The 3D hero pulls a ~240KB three.js bundle. Phones and low-core devices
-// never show it anyway, so gate it here — the chunk isn't even requested
-// unless the device is a capable desktop (>=4 cores, viewport >= md).
+// The 3D hero pulls a ~240KB three.js bundle. It requires a capable device
+// (>=4 CPU cores). Desktops load it immediately; phones load it too but the
+// chunk isn't even requested until the page has gone idle, so first paint
+// and LCP never compete with it. Low-core devices never load it at all.
 const SMALL_SCREEN = '(max-width: 767px)';
 
 function subscribeToScreen(cb: () => void) {
@@ -17,13 +18,48 @@ function subscribeToScreen(cb: () => void) {
   return () => mq.removeEventListener('change', cb);
 }
 
-function getCapableOf3D() {
-  return navigator.hardwareConcurrency >= 4 && !window.matchMedia(SMALL_SCREEN).matches;
+function getCoresCapable() {
+  return navigator.hardwareConcurrency >= 4;
 }
+
+function getIsPhone() {
+  return window.matchMedia(SMALL_SCREEN).matches;
+}
+
+// A tiny external store for "the page is idle now". Exposed through
+// useSyncExternalStore so no state is set inside an effect.
+const idle3D = {
+  value: false,
+  started: false,
+  listeners: new Set<() => void>(),
+  start() {
+    if (this.started || typeof window === 'undefined') return;
+    this.started = true;
+    const done = () => {
+      this.value = true;
+      this.listeners.forEach((l) => l());
+    };
+    if (typeof window.requestIdleCallback === 'function') {
+      window.requestIdleCallback(done, { timeout: 3000 });
+    } else {
+      window.setTimeout(done, 2000);
+    }
+  },
+  subscribe(listener: () => void) {
+    idle3D.listeners.add(listener);
+    return () => idle3D.listeners.delete(listener);
+  },
+};
 
 export default function Hero() {
   const { openBrandModal, openCreatorModal } = useLeadModals();
-  const capableOf3D = useSyncExternalStore(subscribeToScreen, getCapableOf3D, () => false);
+  const coresCapable = useSyncExternalStore(subscribeToScreen, getCoresCapable, () => false);
+  const isPhone = useSyncExternalStore(subscribeToScreen, getIsPhone, () => false);
+  const isIdle = useSyncExternalStore(idle3D.subscribe, () => idle3D.value, () => false);
+
+  useEffect(() => {
+    idle3D.start();
+  }, []);
   const platformBadges = [
     { platform: "YouTube", stat: "500M+ Views", icon: "▶", color: "hover:border-red-500/40" },
     { platform: "TikTok", stat: "820M+ Views", icon: "♪", color: "hover:border-cyan-500/40" },
@@ -34,8 +70,8 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen w-full overflow-hidden flex flex-col justify-between" id="hero">
-      {/* 3D Canvas Background — desktop-class devices only (see gate above) */}
-      {capableOf3D && <ClientHero />}
+      {/* 3D Canvas Background — capable devices; phones defer until idle */}
+      {coresCapable && (!isPhone || isIdle) && <ClientHero />}
 
       {/* Atmospheric gradient overlay */}
       <div className="absolute inset-0 z-[1] bg-gradient-to-b from-background/40 via-background/20 to-background pointer-events-none" />
