@@ -45,9 +45,9 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-6">
-        {/* Logo: original dan wordmark, untouched colors, transparent bg */}
+        {/* Logo: dan wordmark, dark-optimized variant (white "a"), floating */}
         <Link href="/" aria-label="dan Services — home" className="flex items-center">
-          <Image src="/brand/dan-logo.png" alt="dan" width={86} height={36} priority className="h-9 w-auto" />
+          <Image src="/brand/dan-logo-dark.png" alt="dan" width={86} height={36} priority className="h-9 w-auto" />
         </Link>
 
         {/* Desktop nav */}

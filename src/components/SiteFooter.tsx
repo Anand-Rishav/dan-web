@@ -28,7 +28,7 @@ export default function SiteFooter() {
         <div className="grid gap-12 md:grid-cols-4">
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center">
-              <Image src="/brand/dan-logo.png" alt="dan" width={86} height={36} className="h-9 w-auto" />
+              <Image src="/brand/dan-logo-dark.png" alt="dan" width={86} height={36} className="h-9 w-auto" />
             </div>
             <p className="text-sm text-gray-400 leading-relaxed max-w-sm">
               Engineering viral cultural moments & high-ROI creator campaigns across YouTube, Instagram, X (Twitter), LinkedIn, and TikTok.

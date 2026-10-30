@@ -64,11 +64,11 @@ await sharp(dark, { raw: { width: W, height: H, channels: 4 } })
   .png()
   .toFile("brand-src/dan-dark.png");
 
-// 4. Navbar + footer web size (h=72 retina -> 2x of 36px) — ORIGINAL colors,
-// unchanged from the file the client sent (transparent background only).
-// New filename per iteration: the dev/prod image optimizer caches transforms
-// by URL, so re-using a name after changing file content serves stale pixels.
-await sharp("brand-src/dan-light-bg.png").resize({ height: 72 }).png().toFile("public/brand/dan-logo.png");
+// 4. Navbar + footer web size (h=72 retina) — DARK-optimized variant
+// (charcoal "a" -> white) so the wordmark reads on the dark theme.
+// Fresh filename per iteration: the image optimizer caches transforms by
+// URL, so re-using a name after changing content serves stale pixels.
+await sharp("brand-src/dan-dark.png").resize({ height: 72 }).png().toFile("public/brand/dan-logo-dark.png");
 
 // 5. Favicon "d" mark: find the right edge of the blue "d" (blue-dominant
 // pixels) instead of guessing a fraction of the wordmark width.
