@@ -28,6 +28,20 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "DAN SERVICES",
+  url: "https://www.danservices.in",
+  logo: "https://www.danservices.in/icon.png",
+  description: "DAN SERVICES is an elite, full-service Influencer Marketing Agency specializing in high-converting campaigns across YouTube, Instagram, X (Twitter), LinkedIn, and TikTok.",
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "Customer Service",
+    email: "info@danservices.in",
+  },
+};
+
 // Strips DOM attributes injected by browser extensions (Bitwarden's
 // bis_skin_checked/bis_register and similar __processed_* markers) before
 // React hydrates, so extension noise can't trigger false hydration
@@ -52,36 +66,54 @@ const extensionAttrScrubber = `
       for (var i = 0; i < nodes.length; i++) strip(nodes[i]);
     }
   };
+  var isExtScript = function (node) {
+    return node && node.nodeType === 1 && node.tagName === "SCRIPT" && (
+      (node.getAttribute && node.getAttribute("data-dynamic-id")) ||
+      (node.src && node.src.indexOf("chrome-extension://") === 0)
+    );
+  };
   stripTree(document.documentElement);
   new MutationObserver(function (mutations) {
     for (var i = 0; i < mutations.length; i++) {
       var m = mutations[i];
       if (m.type === "attributes") strip(m.target);
       else if (m.type === "childList") {
-        for (var j = 0; j < m.addedNodes.length; j++) stripTree(m.addedNodes[j]);
+        for (var j = 0; j < m.addedNodes.length; j++) {
+          var node = m.addedNodes[j];
+          if (isExtScript(node)) {
+            if (node.parentNode) node.parentNode.removeChild(node);
+          } else {
+            stripTree(node);
+          }
+        }
       }
     }
   }).observe(document.documentElement, {
+    // No attributeFilter: extension markers like __processed_<uuid> have
+    // random names that can't be listed, and <body> doesn't exist yet when
+    // this head script runs — so every attribute mutation must be observed.
+    // strip() still only removes known extension namespaces.
     attributes: true,
-    attributeFilter: ["bis_skin_checked", "bis_register"],
     subtree: true,
     childList: true,
   });
+
+  // Structured data is injected AFTER the page settles instead of being
+  // rendered by React: extensions that replace/insert <script> elements in
+  // <head> (executor-style) can then never create a hydration mismatch
+  // around it, and crawlers that execute JS still read it from the DOM.
+  var injectLd = function () {
+    if (document.querySelector('script[data-jsonld="dan"]')) return;
+    var s = document.createElement("script");
+    s.type = "application/ld+json";
+    s.setAttribute("data-jsonld", "dan");
+    s.text = ${JSON.stringify(JSON.stringify(jsonLd))};
+    document.head.appendChild(s);
+  };
+  if (document.readyState === "complete") injectLd();
+  else window.addEventListener("load", injectLd);
 })();
 `;
-
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "DAN SERVICES",
-  url: "https://www.danservices.in",
-  description: "DAN SERVICES is an elite, full-service Influencer Marketing Agency specializing in high-converting campaigns across YouTube, Instagram, X (Twitter), LinkedIn, and TikTok.",
-  contactPoint: {
-    "@type": "ContactPoint",
-    contactType: "Customer Service",
-    email: "info@danservices.in",
-  },
-};
 
 export default function RootLayout({
   children,
@@ -94,13 +126,10 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
       <head>
-        {/* Runs before hydration so extension-injected attributes are gone
-            by the time React reconciles the server HTML with the DOM. */}
+        {/* Runs before hydration so extension-injected attributes and script
+            elements are gone by the time React reconciles the server HTML
+            with the DOM. Also injects the JSON-LD after load (see inside). */}
         <script dangerouslySetInnerHTML={{ __html: extensionAttrScrubber }} />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         {children}

@@ -1,10 +1,16 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "fs/promises";
+import path from "path";
 
 export const alt = "DAN SERVICES — Engineering Viral Cultural Moments & High-ROI Creator Campaigns";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function OpengraphImage() {
+export default async function OpengraphImage() {
+  const logoBase64 = await readFile(
+    path.join(process.cwd(), "public/brand/dan-og.png"),
+    "base64"
+  );
   return new ImageResponse(
     (
       <div
@@ -20,22 +26,25 @@ export default function OpengraphImage() {
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 40 }}>
-          <span style={{ fontSize: 72, fontWeight: 800, letterSpacing: "-0.02em" }}>DAN SERVICES</span>
-          <span
-            style={{
-              width: 16,
-              height: 16,
-              borderRadius: 9999,
-              background: "#00bcd4",
-              display: "block",
-            }}
-          />
+        {/* dan wordmark (original colors) inside a white rounded card */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "#ffffff",
+            borderRadius: 28,
+            padding: "28px 56px",
+            marginBottom: 40,
+          }}
+        >
+          <img src={`data:image/png;base64,${logoBase64}`} alt="dan" width={360} height={144} />
         </div>
-        <div style={{ fontSize: 40, color: "#a1a1aa", textAlign: "center", maxWidth: 900, lineHeight: 1.3 }}>
+        <div style={{ fontSize: 40, fontWeight: 600, letterSpacing: "-0.01em", marginBottom: 24 }}>DAN SERVICES</div>
+        <div style={{ fontSize: 30, color: "#a1a1aa", textAlign: "center", maxWidth: 900, lineHeight: 1.35 }}>
           Engineering Viral Cultural Moments &amp; High-ROI Creator Campaigns
         </div>
-        <div style={{ display: "flex", gap: 24, marginTop: 48, color: "#4dd0e1", fontSize: 24 }}>
+        <div style={{ display: "flex", gap: 24, marginTop: 40, color: "#4dd0e1", fontSize: 22 }}>
           <span>YouTube</span>
           <span>•</span>
           <span>TikTok</span>

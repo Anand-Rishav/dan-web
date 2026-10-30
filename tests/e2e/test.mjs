@@ -313,8 +313,8 @@ check(
   nfBody.includes("This Campaign Didn&#x27;t Convert") && nfBody.includes("Return to Homepage") && nfBody.includes("Main navigation"),
   "",
 );
-const iconResp = await page.request.get(`${BASE}/icon`);
-const appleResp = await page.request.get(`${BASE}/apple-icon`);
+const iconResp = await page.request.get(`${BASE}/icon.png`);
+const appleResp = await page.request.get(`${BASE}/apple-icon.png`);
 check(
   "T14c generated favicon + apple-touch-icon served",
   iconResp.status() === 200 && appleResp.status() === 200,

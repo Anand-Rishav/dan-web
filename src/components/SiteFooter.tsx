@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useLeadModals } from "@/components/LeadModalProvider";
 import { scrollToSection } from "@/lib/scrollControl";
 
@@ -26,9 +27,8 @@ export default function SiteFooter() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid gap-12 md:grid-cols-4">
           <div className="md:col-span-2 space-y-4">
-            <div className="flex items-center gap-2">
-              <span className="text-xl font-extrabold text-white tracking-tight">DAN SERVICES</span>
-              <span className="w-2 h-2 rounded-full bg-primary-400 animate-pulse" />
+            <div className="flex items-center">
+              <Image src="/brand/dan-logo.png" alt="dan" width={86} height={36} className="h-9 w-auto" />
             </div>
             <p className="text-sm text-gray-400 leading-relaxed max-w-sm">
               Engineering viral cultural moments & high-ROI creator campaigns across YouTube, Instagram, X (Twitter), LinkedIn, and TikTok.

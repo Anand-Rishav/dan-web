@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useLeadModals } from "@/components/LeadModalProvider";
 import { scrollToSection } from "@/lib/scrollControl";
@@ -44,10 +45,9 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-6">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 text-white font-bold text-lg tracking-tight">
-          DAN SERVICES
-          <span className="h-2 w-2 bg-primary-400 rounded-full animate-pulse" />
+        {/* Logo: original dan wordmark, untouched colors, transparent bg */}
+        <Link href="/" aria-label="dan Services — home" className="flex items-center">
+          <Image src="/brand/dan-logo.png" alt="dan" width={86} height={36} priority className="h-9 w-auto" />
         </Link>
 
         {/* Desktop nav */}
