@@ -7,7 +7,7 @@ import sharp from "sharp";
 const SIZES = [16, 32, 48];
 const pngs = [];
 for (const size of SIZES) {
-  const buf = await sharp("public/brand/d-mark.png")
+  const buf = await sharp("brand-src/d-mark.png")
     .resize(size, size, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
     .png()
     .toBuffer();
