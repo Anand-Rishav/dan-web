@@ -11,7 +11,7 @@ interface ROICalculatorProps {
 // references and does not need them as dependencies.
 const platformOptions = [
   { label: "YouTube", value: "youtube", icon: "▶" },
-  { label: "TikTok", value: "tiktok", icon: "♪" },
+  
   { label: "Instagram", value: "instagram", icon: "📷" },
   { label: "X / Twitter", value: "x", icon: "𝕏" },
   { label: "LinkedIn", value: "linkedin", icon: "in" },
@@ -35,7 +35,7 @@ const goalOptions = [
 export default function ROICalculator({ className = "" }: ROICalculatorProps) {
   const { openBrandModal } = useLeadModals();
   const [budget, setBudget] = useState(35000);
-  const [platforms, setPlatforms] = useState<string[]>(["youtube", "tiktok"]);
+  const [platforms, setPlatforms] = useState<string[]>(["youtube", "instagram"]);
   const [niche, setNiche] = useState<string>("saas");
   const [goal, setGoal] = useState<string>("sales");
 
@@ -45,7 +45,6 @@ export default function ROICalculator({ className = "" }: ROICalculatorProps) {
     const platformFactor = platforms.reduce((acc, p) => {
       switch (p) {
         case "youtube": return acc + 1.6;
-        case "tiktok": return acc + 2.1;
         case "instagram": return acc + 1.4;
         case "x": return acc + 1.0;
         case "linkedin": return acc + 0.85;

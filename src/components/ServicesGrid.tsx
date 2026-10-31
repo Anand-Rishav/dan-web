@@ -22,7 +22,7 @@ export default function ServicesGrid({ className = "" }: ServicesGridProps) {
     },
     {
       id: 2,
-      title: "TikTok & Reels Viral Blitz",
+      title: "Reels Viral Blitz",
       description:
         "Rapid algorithmic wave orchestration across dozens of creators to dominate sound trends, Spark Ads, and vertical video feeds.",
       icon: "♪",

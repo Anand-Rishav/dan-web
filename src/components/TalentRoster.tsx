@@ -44,7 +44,7 @@ const creators: Creator[] = [
     avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&h=300&fit=crop&crop=faces",
     verified: true,
     platforms: [
-      { name: "TikTok", followers: "2.8M" },
+      
       { name: "Instagram", followers: "1.9M" },
     ],
     niche: "D2C & Lifestyle",
@@ -92,7 +92,7 @@ const creators: Creator[] = [
     avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&crop=faces",
     verified: true,
     platforms: [
-      { name: "TikTok", followers: "3.6M" },
+      
       { name: "YouTube", followers: "1.8M" },
     ],
     niche: "Gaming",
@@ -109,7 +109,7 @@ const creators: Creator[] = [
     verified: true,
     platforms: [
       { name: "Instagram", followers: "2.4M" },
-      { name: "TikTok", followers: "1.6M" },
+      
     ],
     niche: "D2C & Lifestyle",
     engagementRate: 6.9,
@@ -152,7 +152,7 @@ export default function TalentRoster({ className = "" }: TalentRosterProps) {
     { label: "YouTube", value: "youtube" },
     { label: "Instagram", value: "instagram" },
     { label: "X / LinkedIn", value: "x" },
-    { label: "TikTok", value: "tiktok" },
+
   ];
 
   const nicheButtons = [

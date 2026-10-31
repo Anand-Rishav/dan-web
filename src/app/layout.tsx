@@ -18,10 +18,10 @@ export const metadata: Metadata = {
     template: "%s | DAN SERVICES",
     default: "DAN SERVICES | Engineering Viral Cultural Moments & High-ROI Creator Campaigns",
   },
-  description: "DAN SERVICES is an elite, full-service Influencer Marketing Agency specializing in high-converting campaigns across YouTube, Instagram, X (Twitter), LinkedIn, and TikTok.",
+  description: "DAN SERVICES is an elite, full-service Influencer Marketing Agency specializing in high-converting campaigns across YouTube, Instagram, X (Twitter), and LinkedIn.",
   openGraph: {
     title: "DAN SERVICES | Engineering Viral Cultural Moments & High-ROI Creator Campaigns",
-    description: "DAN SERVICES is an elite, full-service Influencer Marketing Agency specializing in high-converting campaigns across YouTube, Instagram, X (Twitter), LinkedIn, and TikTok.",
+    description: "DAN SERVICES is an elite, full-service Influencer Marketing Agency specializing in high-converting campaigns across YouTube, Instagram, X (Twitter), and LinkedIn.",
     url: "https://www.danservices.in",
     siteName: "DAN SERVICES",
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "DAN SERVICES Logo" }],
@@ -34,7 +34,7 @@ const jsonLd = {
   name: "DAN SERVICES",
   url: "https://www.danservices.in",
   logo: "https://www.danservices.in/icon.png",
-  description: "DAN SERVICES is an elite, full-service Influencer Marketing Agency specializing in high-converting campaigns across YouTube, Instagram, X (Twitter), LinkedIn, and TikTok.",
+  description: "DAN SERVICES is an elite, full-service Influencer Marketing Agency specializing in high-converting campaigns across YouTube, Instagram, X (Twitter), and LinkedIn.",
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "Customer Service",

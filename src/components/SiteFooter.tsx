@@ -31,7 +31,7 @@ export default function SiteFooter() {
               <Image src="/brand/dan-logo-dark.png" alt="dan" width={86} height={36} className="h-9 w-auto" />
             </div>
             <p className="text-sm text-gray-400 leading-relaxed max-w-sm">
-              Engineering viral cultural moments & high-ROI creator campaigns across YouTube, Instagram, X (Twitter), LinkedIn, and TikTok.
+              Engineering viral cultural moments & high-ROI creator campaigns across YouTube, Instagram, X (Twitter), and LinkedIn.
             </p>
             <div className="flex items-center gap-3 pt-2 text-xs font-mono text-gray-400">
               <span>NEW YORK</span>

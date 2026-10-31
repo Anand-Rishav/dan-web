@@ -23,7 +23,7 @@ export default function AboutPage() {
               </span>
             </h1>
             <p className="text-lg text-gray-400 max-w-3xl leading-relaxed">
-              DAN SERVICES is an elite, full-service Influencer Marketing Agency specializing in high-converting, high-impact campaigns across YouTube, TikTok, Instagram, X (Twitter), and LinkedIn.
+              DAN SERVICES is an elite, full-service Influencer Marketing Agency specializing in high-converting, high-impact campaigns across YouTube, Instagram, X (Twitter), and LinkedIn.
             </p>
           </div>
 
@@ -47,7 +47,7 @@ export default function AboutPage() {
                 },
                 {
                   title: "Algorithmic Velocity",
-                  desc: "We engineer release schedules to trigger YouTube and TikTok recommendation engines simultaneously, maximizing organic secondary lift.",
+                  desc: "We engineer release schedules to trigger YouTube recommendation engines with coordinated Reels drops simultaneously, maximizing organic secondary lift.",
                   icon: "⚡",
                 },
                 {

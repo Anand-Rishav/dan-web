@@ -30,7 +30,7 @@ const campaigns: Campaign[] = [
     category: "Gaming & Esports",
     creatorFleet: "28 Top Gaming Streamers & YouTubers",
     headline: "Season Launch Creator Takeover",
-    deliverables: ["Dedicated YouTube Integrations", "Twitch Drops Activation", "TikTok Sound Trend Blitz"],
+    deliverables: ["Dedicated YouTube Integrations", "Twitch Drops Activation", "Reels Sound Trend Blitz"],
     results: {
       roas: "+420% ROAS",
       impressions: "18.4M Organic Views",
@@ -40,7 +40,7 @@ const campaigns: Campaign[] = [
     thumbnail: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=500&fit=crop",
     overview:
       "Orchestrated a synchronized 48-hour launch blitz across 28 tier-1 gaming creators. By combining custom Twitch Drops with dedicated YouTube gameplay deep dives, we drove unprecedented viral velocity and record player acquisition.",
-    platforms: ["YouTube", "Twitch", "TikTok"],
+    platforms: ["YouTube", "Twitch", "Instagram"],
   },
   {
     id: 2,
@@ -76,25 +76,25 @@ const campaigns: Campaign[] = [
     thumbnail: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&h=500&fit=crop",
     overview:
       "Replaced generic promo reads with bespoke narrative-driven sketches tailored to each creator's unique audience lore. Resulted in a 4.2x higher click-through rate compared to industry benchmarks.",
-    platforms: ["YouTube", "Instagram", "TikTok"],
+    platforms: ["YouTube", "Instagram", "LinkedIn"],
   },
   {
     id: 4,
     brand: "Notion",
     category: "Productivity & AI SaaS",
     creatorFleet: "35 Aesthetic & Workspace Creators",
-    headline: "TikTok & Reels Workspace Aesthetic Blitz",
+    headline: "Reels Workspace Aesthetic Blitz",
     deliverables: ["Template Distribution Blitz", "Before/After Workflow Reels", "UGC Spark Ads Whitelisting"],
     results: {
       roas: "+490% Attributed ROAS",
       impressions: "31.2M Video Views",
       conversions: "94,000 Template Downloads",
-      highlight: "Top 3 Most Shared Productivity App on TikTok",
+      highlight: "Top 3 Most Shared Productivity App on Instagram",
     },
     thumbnail: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=500&fit=crop",
     overview:
       "Tapped into the 'aesthetic desk setup' cultural trend. Creators shared downloadable Notion life-organizer templates directly in bio links, converting casual scrollers into lifetime software subscribers.",
-    platforms: ["TikTok", "Instagram", "YouTube"],
+    platforms: ["Instagram", "LinkedIn", "YouTube"],
   },
   {
     id: 5,
@@ -111,8 +111,8 @@ const campaigns: Campaign[] = [
     },
     thumbnail: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800&h=500&fit=crop",
     overview:
-      "Timed exclusive athlete capsule codes across 20 high-energy fitness creators on Instagram and TikTok right at the drop hour. Created an online frenzy that generated over $2.4M in tracked revenue within 24 hours.",
-    platforms: ["Instagram", "TikTok", "YouTube"],
+      "Timed exclusive athlete capsule codes across 20 high-energy fitness creators on Instagram and YouTube right at the drop hour. Created an online frenzy that generated over $2.4M in tracked revenue within 24 hours.",
+    platforms: ["Instagram", "LinkedIn", "YouTube"],
   },
 ];
 

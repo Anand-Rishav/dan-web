@@ -33,7 +33,7 @@ export default function BrandIntakeModal({ isOpen, onClose, prefill }: BrandInta
     website: "",
     contactName: "",
     email: "",
-    platforms: ["youtube", "tiktok"] as string[],
+    platforms: ["youtube", "instagram"] as string[],
     budget: "$25k-$50k",
     timeline: "ASAP (Within 2 weeks)",
     goal: "sales",

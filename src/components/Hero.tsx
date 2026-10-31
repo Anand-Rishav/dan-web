@@ -62,7 +62,6 @@ export default function Hero() {
   }, []);
   const platformBadges = [
     { platform: "YouTube", stat: "500M+ Views", icon: "▶", color: "hover:border-red-500/40" },
-    { platform: "TikTok", stat: "820M+ Views", icon: "♪", color: "hover:border-cyan-500/40" },
     { platform: "Instagram", stat: "340M+ Reach", icon: "📷", color: "hover:border-pink-500/40" },
     { platform: "X (Twitter)", stat: "160M+ Impr", icon: "𝕏", color: "hover:border-white/40" },
     { platform: "LinkedIn", stat: "45M+ B2B", icon: "in", color: "hover:border-blue-500/40" },

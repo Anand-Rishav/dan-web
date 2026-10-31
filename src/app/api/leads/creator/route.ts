@@ -22,7 +22,7 @@ const creatorApplicationSchema = z.object({
     instagram: z.string().optional(),
     twitter: z.string().optional(),
     linkedin: z.string().optional(),
-    tiktok: z.string().optional(),
+
   }).optional(),
   niche: z.string().min(1, 'Niche is required'),
   mediaKitUrl: z.string().optional(),

@@ -23,7 +23,6 @@ export default function CreatorApplicationModal({ isOpen, onClose }: CreatorAppl
     instagram: "",
     x: "",
     linkedin: "",
-    tiktok: "",
     niche: "Tech & AI",
     audienceDemographics: "",
     mediaKitUrl: "",
@@ -59,7 +58,6 @@ export default function CreatorApplicationModal({ isOpen, onClose }: CreatorAppl
             instagram: formData.instagram || undefined,
             twitter: formData.x || undefined,
             linkedin: formData.linkedin || undefined,
-            tiktok: formData.tiktok || undefined,
           },
         }),
       });
@@ -263,20 +261,6 @@ export default function CreatorApplicationModal({ isOpen, onClose }: CreatorAppl
                           />
                         </div>
                         <div>
-                          <label htmlFor="creator-tiktok" className="text-xs font-semibold text-gray-300 mb-1 block">TikTok Handle</label>
-                          <input
-                            id="creator-tiktok"
-                            type="text"
-                            placeholder="@handle"
-                            value={formData.tiktok}
-                            onChange={(e) => handleChange("tiktok", e.target.value)}
-                            className={inputClasses}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <div>
                           <label htmlFor="creator-instagram" className="text-xs font-semibold text-gray-300 mb-1 block">Instagram Profile</label>
                           <input
                             id="creator-instagram"
@@ -287,6 +271,9 @@ export default function CreatorApplicationModal({ isOpen, onClose }: CreatorAppl
                             className={inputClasses}
                           />
                         </div>
+                      </div>
+
+                      <div className="grid gap-3 sm:grid-cols-2">
                         <div>
                           <label htmlFor="creator-x" className="text-xs font-semibold text-gray-300 mb-1 block">X / Twitter Handle</label>
                           <input
@@ -298,18 +285,17 @@ export default function CreatorApplicationModal({ isOpen, onClose }: CreatorAppl
                             className={inputClasses}
                           />
                         </div>
-                      </div>
-
-                      <div>
-                        <label htmlFor="creator-linkedin" className="text-xs font-semibold text-gray-300 mb-1 block">LinkedIn Profile (B2B Creators)</label>
-                        <input
-                          id="creator-linkedin"
-                          type="text"
-                          placeholder="linkedin.com/in/handle"
-                          value={formData.linkedin}
-                          onChange={(e) => handleChange("linkedin", e.target.value)}
-                          className={inputClasses}
-                        />
+                        <div>
+                          <label htmlFor="creator-linkedin" className="text-xs font-semibold text-gray-300 mb-1 block">LinkedIn Profile (B2B Creators)</label>
+                          <input
+                            id="creator-linkedin"
+                            type="text"
+                            placeholder="linkedin.com/in/handle"
+                            value={formData.linkedin}
+                            onChange={(e) => handleChange("linkedin", e.target.value)}
+                            className={inputClasses}
+                          />
+                        </div>
                       </div>
 
                       <div className="flex gap-3 pt-2">

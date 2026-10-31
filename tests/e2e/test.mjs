@@ -187,12 +187,12 @@ await dlg7.locator("#brand-contact").fill("Recruiter");
 await dlg7.locator("#brand-email").fill("x@brand.com");
 await dlg7.getByRole("button", { name: "Continue to Platforms & Budget →" }).click();
 const pressed = {};
-for (const label of ["YouTube", "TikTok", "Instagram", "X / Twitter", "LinkedIn"]) {
+for (const label of ["YouTube", "Instagram", "X / Twitter", "LinkedIn"]) {
   pressed[label] = await dlg7.getByRole("button", { name: label, exact: true }).getAttribute("aria-pressed");
 }
 check(
   "T7b creator platforms preselected (YouTube + X)",
-  pressed["YouTube"] === "true" && pressed["X / Twitter"] === "true" && pressed["TikTok"] === "false" && pressed["Instagram"] === "false" && pressed["LinkedIn"] === "false",
+  pressed["YouTube"] === "true" && pressed["X / Twitter"] === "true" && pressed["Instagram"] === "false" && pressed["LinkedIn"] === "false",
   JSON.stringify(pressed),
 );
 await dlg7.getByRole("button", { name: "Next: Goals & Finalize →" }).click();

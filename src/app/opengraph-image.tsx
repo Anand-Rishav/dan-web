@@ -47,7 +47,6 @@ export default async function OpengraphImage() {
         <div style={{ display: "flex", gap: 24, marginTop: 40, color: "#4dd0e1", fontSize: 22 }}>
           <span>YouTube</span>
           <span>•</span>
-          <span>TikTok</span>
           <span>•</span>
           <span>Instagram</span>
           <span>•</span>

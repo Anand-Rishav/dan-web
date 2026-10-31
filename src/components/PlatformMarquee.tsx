@@ -4,7 +4,6 @@ export default function PlatformMarquee() {
     { name: "Instagram", sub: "Reels & Stories", icon: "📷" },
     { name: "X / Twitter", sub: "Thought Leadership & Viral Threads", icon: "𝕏" },
     { name: "LinkedIn", sub: "B2B Creator Campaigns", icon: "in" },
-    { name: "TikTok", sub: "UGC & Spark Ads", icon: "♪" },
   ];
 
   // Exactly two copies: the marquee animation translates -50%, so the track

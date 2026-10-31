@@ -4,7 +4,7 @@ import CampaignShowcase from "@/components/CampaignShowcase";
 
 export const metadata: Metadata = {
   title: "Case Studies",
-  description: "See how DAN SERVICES has helped brands achieve explosive growth through strategic creator partnerships across YouTube, TikTok, Instagram, X, and LinkedIn.",
+  description: "See how DAN SERVICES has helped brands achieve explosive growth through strategic creator partnerships across YouTube, Instagram, X, and LinkedIn.",
 };
 
 export default function CaseStudiesPage() {

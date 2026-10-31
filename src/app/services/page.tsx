@@ -4,7 +4,7 @@ import ServicesGrid from "@/components/ServicesGrid";
 
 export const metadata: Metadata = {
   title: "Services",
-  description: "Full-service influencer marketing capabilities: YouTube sponsorships, TikTok/Reels blitzes, B2B thought leadership, performance UGC, FTC compliance, and ROAS telemetry.",
+  description: "Full-service influencer marketing capabilities: YouTube sponsorships, Reels blitzes, B2B thought leadership, performance UGC, FTC compliance, and ROAS telemetry.",
 };
 
 export default function ServicesPage() {
