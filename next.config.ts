@@ -11,6 +11,11 @@ const nextConfig: NextConfig = {
   },
   cacheComponents: true,
   partialPrefetching: true,
+  experimental: {
+    // Tailwind/atomic CSS inlined into <head>: removes the render-blocking
+    // stylesheet round-trip for first-time visitors (mobile LCP win).
+    inlineCss: true,
+  },
   turbopack: {
     rules: {
       "*.css": {

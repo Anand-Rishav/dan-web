@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.danservices.in"),
   title: {
     template: "%s | DAN SERVICES",
-    default: "DAN SERVICES | Engineering Viral Cultural Moments & High-ROI Creator Campaigns",
+    default: "DAN SERVICES | Elite Influencer Marketing Agency",
   },
   description: "DAN SERVICES is an elite, full-service Influencer Marketing Agency specializing in high-converting campaigns across YouTube, Instagram, X (Twitter), and LinkedIn.",
   openGraph: {
@@ -30,16 +30,39 @@ export const metadata: Metadata = {
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "DAN SERVICES",
-  url: "https://www.danservices.in",
-  logo: "https://www.danservices.in/icon.png",
-  description: "DAN SERVICES is an elite, full-service Influencer Marketing Agency specializing in high-converting campaigns across YouTube, Instagram, X (Twitter), and LinkedIn.",
-  contactPoint: {
-    "@type": "ContactPoint",
-    contactType: "Customer Service",
-    email: "info@danservices.in",
-  },
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://www.danservices.in/#org",
+      name: "DAN SERVICES",
+      url: "https://www.danservices.in",
+      logo: "https://www.danservices.in/icon.png",
+      description:
+        "DAN SERVICES is an elite, full-service Influencer Marketing Agency specializing in high-converting campaigns across YouTube, Instagram, X (Twitter), and LinkedIn.",
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "Customer Service",
+        email: "info@danservices.in",
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://www.danservices.in/#website",
+      url: "https://www.danservices.in",
+      name: "DAN SERVICES",
+      publisher: { "@id": "https://www.danservices.in/#org" },
+    },
+    {
+      "@type": "Service",
+      "@id": "https://www.danservices.in/#service",
+      name: "Influencer Marketing Campaigns",
+      serviceType: "Influencer Marketing",
+      provider: { "@id": "https://www.danservices.in/#org" },
+      areaServed: "IN",
+      description:
+        "End-to-end creator campaigns: strategy, talent matching, FTC-compliant content, and performance analytics across YouTube, Instagram, X (Twitter), and LinkedIn.",
+    },
+  ],
 };
 
 // Strips DOM attributes injected by browser extensions (Bitwarden's
